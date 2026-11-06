@@ -732,7 +732,7 @@
         osc.stop(audioCtx.currentTime + 0.35);
     }
 
-    // CS2 Cases Data (Faqat Karambit va Butterfly pichoqlari bor $2000 lik keys qo'shildi!)
+    // CS2 Cases Data
     const CASES_DATA = [
         {
             id: 'legendary_knife',
@@ -1205,15 +1205,12 @@
         isBusy = true;
         document.getElementById('contract-btn').disabled = true;
 
-        // Calculate average price of 5 items
         const avgPrice = contractSlots.reduce((sum, i) => sum + i.price, 0) / 5;
-        // Target pool is slightly higher value items
         let possibleTargets = ALL_SKINS.filter(s => s.price >= avgPrice && s.price <= avgPrice * 2.5);
         if (possibleTargets.length === 0) possibleTargets = ALL_SKINS;
 
         const wonItem = { ...possibleTargets[Math.floor(Math.random() * possibleTargets.length)], uid: Date.now() };
 
-        // Remove used items from inventory
         contractSlots.forEach(slot => {
             const idx = inventory.findIndex(i => i.uid === slot.uid);
             if (idx !== -1) inventory.splice(idx, 1);
