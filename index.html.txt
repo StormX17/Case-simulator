@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CS2 Case Simulator</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0f1219;
+            --bg-card: #181d27;
+            --bg-hover: #222938;
+            --accent: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --blue: #4b69ff;
+            --purple: #8847ff;
+            --pink: #d32ce6;
+            --red: #eb4b4b;
+            --gold: #ffd700;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--bg-card);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a3241;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+
+        .balance-box {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #34d399;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-funds {
+            background: #10b981;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            width: 22px;
+            height: 22px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            background: var(--bg-card);
+            border-bottom: 1px solid #2a3241;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        /* Main Container */
+        .container {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        /* Cases Grid */
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+
+        .case-card {
+            background: var(--bg-card);
+            border: 1px solid #2a3241;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .case-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            background: var(--bg-hover);
+        }
+
+        .case-icon {
+            font-size: 3.5rem;
+            margin: 10px 0;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+        }
+
+        .case-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .case-price {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        /* Case Opening View */
+        #case-view {
+            display: none;
+        }
+
+        .back-btn {
+            background: var(--bg-card);
+            border: 1px solid #2a3241;
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .roulette-wrapper {
+            position: relative;
+            width: 100%;
+            height: 150px;
+            background: #0a0c10;
+            border: 2px solid #2a3241;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.9);
+        }
+
+        .roulette-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            width: 3px;
+            background: var(--accent);
+            z-index: 10;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .roulette-track {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            will-change: transform;
+        }
+
+        .roulette-item {
+            min-width: 130px;
+            height: 130px;
+            margin: 0 5px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
+            text-align: center;
+            border-bottom: 4px solid gray;
+            position: relative;
+        }
+
+        .item-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 6px;
+        }
+
+        .item-weapon {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .item-skin {
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        .open-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: none;
+            border-radius: 10px;
+            color: #000;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.2s;
+        }
+
+        .open-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Case Contents Preview */
+        .contents-title {
+            margin: 25px 0 12px;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .contents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        /* Inventory */
+        .inv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .sell-all-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .inv-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 4px solid gray;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .sell-btn {
+            margin-top: 8px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid #10b981;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Rarity Colors */
+        .rarity-blue { border-bottom-color: var(--blue); background: linear-gradient(180deg, var(--bg-card) 60%, rgba(75,105,255,0.2) 100%); }
+        .rarity-purple { border-bottom-color: var(--purple); background: linear-gradient(180deg, var(--bg-card) 60%, rgba(136,71,255,0.2) 100%); }
+        .rarity-pink { border-bottom-color: var(--pink); background: linear-gradient(180deg, var(--bg-card) 60%, rgba(211,44,230,0.2) 100%); }
+        .rarity-red { border-bottom-color: var(--red); background: linear-gradient(180deg, var(--bg-card) 60%, rgba(235,75,75,0.25) 100%); }
+        .rarity-gold { border-bottom-color: var(--gold); background: linear-gradient(180deg, var(--bg-card) 50%, rgba(255,215,0,0.3) 100%); }
+
+        /* Modal for Won Item */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 2px solid #2a3241;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            max-width: 340px;
+            width: 100%;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-keep { background: #3b82f6; color: white; }
+        .btn-sell { background: #10b981; color: #000; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">CS2 CASE SIM</div>
+    <div class="balance-box">
+        <span id="balance-display">$100.00</span>
+        <button class="add-funds" onclick="addFreeMoney()" title="Bepul +$50 qo'shish">+</button>
+    </div>
+</header>
+
+<div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('cases')">Keyslar & Naborlar</button>
+    <button class="tab-btn" onclick="switchTab('inventory')">Inventar (<span id="inv-count">0</span>)</button>
+</div>
+
+<div class="container">
+    <!-- Cases List -->
+    <div id="cases-list-view">
+        <div class="cases-grid" id="cases-grid"></div>
+    </div>
+
+    <!-- Single Case Opening -->
+    <div id="case-view">
+        <button class="back-btn" onclick="closeCaseView()">← Orqaga</button>
+        <h2 id="selected-case-title" style="margin-bottom: 5px;">Case Name</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Omadingizni sinab ko'ring!</p>
+
+        <div class="roulette-wrapper">
+            <div class="roulette-line"></div>
+            <div class="roulette-track" id="roulette-track"></div>
+        </div>
+
+        <button class="open-btn" id="spin-btn" onclick="spinCase()">OCHISH ($2.50)</button>
+
+        <h3 class="contents-title">Nabor ichidagi skinlar:</h3>
+        <div class="contents-grid" id="case-contents"></div>
+    </div>
+
+    <!-- Inventory View -->
+    <div id="inventory-view" style="display: none;">
+        <div class="inv-header">
+            <h3>Sizning skinlaringiz</h3>
+            <button class="sell-all-btn" onclick="sellAll()">Hammasini sotish</button>
+        </div>
+        <div class="cases-grid" id="inventory-grid"></div>
+    </div>
+</div>
+
+<!-- Won Item Modal -->
+<div class="modal" id="win-modal">
+    <div class="modal-content" id="modal-box">
+        <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase;">Siz yutdingiz!</p>
+        <div id="win-emoji" style="font-size: 4.5rem; margin: 15px 0;">🔫</div>
+        <h3 id="win-name" style="margin-bottom: 5px;">AK-47 | Inheritance</h3>
+        <p id="win-price" style="color: #34d399; font-weight: 800; font-size: 1.2rem;">$145.00</p>
+        <div class="modal-actions">
+            <button class="modal-btn btn-keep" onclick="closeModal()">Inventarga olish</button>
+            <button class="modal-btn btn-sell" id="modal-sell-btn">Sotish</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Telegram WebApp Init
+    if (window.Telegram && window.Telegram.WebApp) {
+        window.Telegram.WebApp.ready();
+        window.Telegram.WebApp.expand();
+    }
+
+    // Sound Synthesizer (No external MP3 needed)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playTickSound() {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.04);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    function playWinSound(isRare) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = isRare ? 'sawtooth' : 'sine';
+        osc.frequency.setValueAtTime(isRare ? 440 : 330, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(isRare ? 660 : 440, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+    }
+
+    // CS2 Cases & Collections Data
+    const CASES_DATA = [
+        {
+            id: 'kilowatt',
+            name: 'Kilowatt Case',
+            price: 3.20,
+            icon: '⚡',
+            items: [
+                { weapon: 'MAC-10', skin: 'Light Box', rarity: 'blue', price: 0.45, emoji: '🔫' },
+                { weapon: 'SSG 08', skin: 'Dezastre', rarity: 'blue', price: 0.60, emoji: '🎯' },
+                { weapon: 'Tec-9', skin: 'Slag', rarity: 'blue', price: 0.50, emoji: '🔫' },
+                { weapon: 'MP7', skin: 'Just Smile', rarity: 'purple', price: 2.80, emoji: '🔫' },
+                { weapon: 'Glock-18', skin: 'Block-18', rarity: 'purple', price: 4.10, emoji: '🔫' },
+                { weapon: 'M4A1-S', skin: 'Black Lotus', rarity: 'pink', price: 18.50, emoji: ' rifles' },
+                { weapon: 'Zeus x27', skin: 'Olympus', rarity: 'pink', price: 15.00, emoji: '⚡' },
+                { weapon: 'AK-47', skin: 'Inheritance', rarity: 'red', price: 135.00, emoji: '🔥' },
+                { weapon: 'AWP', skin: 'Chrome Cannon', rarity: 'red', price: 95.00, emoji: '🎯' },
+                { weapon: '★ Kukri Knife', skin: 'Fade', rarity: 'gold', price: 680.00, emoji: '🗡️' }
+            ]
+        },
+        {
+            id: 'dreams',
+            name: 'Dreams & Nightmares',
+            price: 2.50,
+            icon: '🦋',
+            items: [
+                { weapon: 'P2000', skin: 'Lifted Spirits', rarity: 'blue', price: 0.35, emoji: '🔫' },
+                { weapon: 'MP5-SD', skin: 'Necro Jr.', rarity: 'blue', price: 0.40, emoji: '🔫' },
+                { weapon: 'XM1014', skin: 'Zombie Offensive', rarity: 'purple', price: 2.10, emoji: '💥' },
+                { weapon: 'USP-S', skin: 'Ticket to Hell', rarity: 'purple', price: 3.40, emoji: '🔫' },
+                { weapon: 'MP9', skin: 'Starlight Protector', rarity: 'red', price: 24.00, emoji: '✨' },
+                { weapon: 'AK-47', skin: 'Nightwish', rarity: 'red', price: 48.00, emoji: '🐉' },
+                { weapon: '★ Butterfly Knife', skin: 'Emerald', rarity: 'gold', price: 2400.00, emoji: '🦋' }
+            ]
+        },
+        {
+            id: 'revolution',
+            name: 'Revolution Case',
+            price: 2.10,
+            icon: '🎨',
+            items: [
+                { weapon: 'P250', skin: 'Re.built', rarity: 'blue', price: 0.30, emoji: '🔫' },
+                { weapon: 'MP9', skin: 'Featherweight', rarity: 'blue', price: 0.35, emoji: '🔫' },
+                { weapon: 'P90', skin: 'Neoqueen', rarity: 'purple', price: 2.50, emoji: '🔫' },
+                { weapon: 'AWP', skin: 'Duality', rarity: 'pink', price: 12.00, emoji: '🎯' },
+                { weapon: 'M4A4', skin: 'Temukau', rarity: 'red', price: 65.00, emoji: '🌸' },
+                { weapon: 'AK-47', skin: 'Head Shot', rarity: 'red', price: 42.00, emoji: '💀' },
+                { weapon: '★ Sport Gloves', skin: 'Vice', rarity: 'gold', price: 1550.00, emoji: '🧤' }
+            ]
+        },
+        {
+            id: 'mirage_souvenir',
+            name: 'Souvenir Mirage Nabori',
+            price: 4.50,
+            icon: '🏜️',
+            items: [
+                { weapon: 'MAG-7', skin: 'Navy Sheen', rarity: 'blue', price: 0.50, emoji: '🔫' },
+                { weapon: 'MP5-SD', skin: 'Oxide Oasis', rarity: 'purple', price: 6.20, emoji: '🔫' },
+                { weapon: 'Desert Eagle', skin: 'Fennec Fox', rarity: 'pink', price: 290.00, emoji: '🦊' },
+                { weapon: 'AWP', skin: 'Desert Hydra', rarity: 'red', price: 1850.00, emoji: '🐍' }
+            ]
+        }
+    ];
+
+    // State Management
+    let balance = parseFloat(localStorage.getItem('cs2_balance')) || 100.00;
+    let inventory = JSON.parse(localStorage.getItem('cs2_inventory')) || [];
+    let currentCase = null;
+    let isSpinning = false;
+    let lastWonItem = null;
+
+    function saveState() {
+        localStorage.setItem('cs2_balance', balance.toFixed(2));
+        localStorage.setItem('cs2_inventory', JSON.stringify(inventory));
+        updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('balance-display').innerText = `$${balance.toFixed(2)}`;
+        document.getElementById('inv-count').innerText = inventory.length;
+    }
+
+    function addFreeMoney() {
+        balance += 50;
+        saveState();
+    }
+
+    // Render Cases
+    function renderCases() {
+        const grid = document.getElementById('cases-grid');
+        grid.innerHTML = '';
+        CASES_DATA.forEach(c => {
+            const card = document.createElement('div');
+            card.className = 'case-card';
+            card.onclick = () => openCaseView(c);
+            card.innerHTML = `
+                <div class="case-icon">${c.icon}</div>
+                <div class="case-name">${c.name}</div>
+                <div class="case-price">$${c.price.toFixed(2)}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    // Switch Tabs
+    function switchTab(tab) {
+        if (isSpinning) return;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        document.getElementById('cases-list-view').style.display = tab === 'cases' ? 'block' : 'none';
+        document.getElementById('case-view').style.display = 'none';
+        document.getElementById('inventory-view').style.display = tab === 'inventory' ? 'block' : 'none';
+
+        if (tab === 'inventory') renderInventory();
+    }
+
+    // Open Single Case View
+    function openCaseView(caseObj) {
+        currentCase = caseObj;
+        document.getElementById('cases-list-view').style.display = 'none';
+        document.getElementById('case-view').style.display = 'block';
+        document.getElementById('selected-case-title').innerText = caseObj.name;
+        document.getElementById('spin-btn').innerText = `OCHISH ($${caseObj.price.toFixed(2)})`;
+
+        // Render Contents
+        const contentsGrid = document.getElementById('case-contents');
+        contentsGrid.innerHTML = '';
+        caseObj.items.forEach(item => {
+            const el = document.createElement('div');
+            el.className = `roulette-item rarity-${item.rarity}`;
+            el.style.minWidth = 'auto';
+            el.innerHTML = `
+                <div class="item-emoji">${item.emoji === ' rifles' ? '🔫' : item.emoji}</div>
+                <div class="item-weapon">${item.weapon}</div>
+                <div class="item-skin">${item.skin}</div>
+                <div style="font-size: 0.75rem; color: #34d399; margin-top:4px;">$${item.price}</div>
+            `;
+            contentsGrid.appendChild(el);
+        });
+
+        populateRouletteTrack(caseObj);
+    }
+
+    function closeCaseView() {
+        if (isSpinning) return;
+        document.getElementById('case-view').style.display = 'none';
+        document.getElementById('cases-list-view').style.display = 'block';
+    }
+
+    // Drop Chance Logic
+    function getRandomItem(caseObj) {
+        const rand = Math.random() * 100;
+        let targetRarity = 'blue';
+        if (rand < 1.5) targetRarity = 'gold';
+        else if (rand < 5) targetRarity = 'red';
+        else if (rand < 15) targetRarity = 'pink';
+        else if (rand < 38) targetRarity = 'purple';
+
+        let pool = caseObj.items.filter(i => i.rarity === targetRarity);
+        if (pool.length === 0) pool = caseObj.items;
+        return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function populateRouletteTrack(caseObj, winningItem = null) {
+        const track = document.getElementById('roulette-track');
+        track.style.transition = 'none';
+        track.style.transform = 'translateX(0px)';
+        track.innerHTML = '';
+
+        for (let i = 0; i < 45; i++) {
+            const item = (i === 35 && winningItem) ? winningItem : getRandomItem(caseObj);
+            const div = document.createElement('div');
+            div.className = `roulette-item rarity-${item.rarity}`;
+            div.innerHTML = `
+                <div class="item-emoji">${item.emoji === ' rifles' ? '🔫' : item.emoji}</div>
+                <div class="item-weapon">${item.weapon}</div>
+                <div class="item-skin">${item.skin}</div>
+            `;
+            track.appendChild(div);
+        }
+    }
+
+    // Spin Animation
+    function spinCase() {
+        if (isSpinning || !currentCase) return;
+        if (balance < currentCase.price) {
+            alert("Balansingizda mablag' yetarli emas! Tepada '+' tugmasini bosib tekin pul qo'shing.");
+            return;
+        }
+
+        balance -= currentCase.price;
+        saveState();
+        isSpinning = true;
+        document.getElementById('spin-btn').disabled = true;
+
+        const wonItem = getRandomItem(currentCase);
+        lastWonItem = { ...wonItem, uid: Date.now() };
+        populateRouletteTrack(currentCase, wonItem);
+
+        const track = document.getElementById('roulette-track');
+        const wrapperWidth = document.querySelector('.roulette-wrapper').offsetWidth;
+        const itemFullWidth = 140; // 130px width + 10px margin
+        const randomOffset = Math.floor(Math.random() * 60) - 30;
+        const targetPosition = (35 * itemFullWidth) - (wrapperWidth / 2) + (itemFullWidth / 2) + randomOffset;
+
+        // Tick sound simulation
+        let tickCount = 0;
+        const tickInterval = setInterval(() => {
+            tickCount++;
+            if (tickCount < 28) playTickSound();
+            else clearInterval(tickInterval);
+        }, 140);
+
+        setTimeout(() => {
+            track.style.transition = 'transform 4.5s cubic-bezier(0.12, 0.8, 0.2, 1)';
+            track.style.transform = `translateX(-${targetPosition}px)`;
+        }, 50);
+
+        setTimeout(() => {
+            isSpinning = false;
+            document.getElementById('spin-btn').disabled = false;
+            inventory.unshift(lastWonItem);
+            saveState();
+            playWinSound(wonItem.rarity === 'red' || wonItem.rarity === 'gold');
+            showWinModal(lastWonItem);
+        }, 4700);
+    }
+
+    // Modal Functions
+    function showWinModal(item) {
+        const modal = document.getElementById('win-modal');
+        const box = document.getElementById('modal-box');
+        box.className = `modal-content rarity-${item.rarity}`;
+        document.getElementById('win-emoji').innerText = item.emoji === ' rifles' ? '🔫' : item.emoji;
+        document.getElementById('win-name').innerText = `${item.weapon} | ${item.skin}`;
+        document.getElementById('win-price').innerText = `$${item.price.toFixed(2)}`;
+        
+        const sellBtn = document.getElementById('modal-sell-btn');
+        sellBtn.innerText = `Sotish ($${item.price.toFixed(2)})`;
+        sellBtn.onclick = () => {
+            sellItem(item.uid);
+            closeModal();
+        };
+
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('win-modal').style.display = 'none';
+    }
+
+    // Inventory Functions
+    function renderInventory() {
+        const grid = document.getElementById('inventory-grid');
+        grid.innerHTML = '';
+        if (inventory.length === 0) {
+            grid.innerHTML = '<p style="color: var(--text-muted); grid-column: 1/-1; text-align:center; padding: 30px;">Inventar bo\'sh. Keys ochib skinlar yuting!</p>';
+            return;
+        }
+
+        inventory.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `inv-card rarity-${item.rarity}`;
+            card.innerHTML = `
+                <div class="item-emoji">${item.emoji === ' rifles' ? '🔫' : item.emoji}</div>
+                <div class="item-weapon">${item.weapon}</div>
+                <div class="item-skin">${item.skin}</div>
+                <button class="sell-btn" onclick="sellItem(${item.uid})">Sotish $${item.price.toFixed(2)}</button>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function sellItem(uid) {
+        const idx = inventory.findIndex(i => i.uid === uid);
+        if (idx !== -1) {
+            balance += inventory[idx].price;
+            inventory.splice(idx, 1);
+            saveState();
+            renderInventory();
+        }
+    }
+
+    function sellAll() {
+        if (inventory.length === 0) return;
+        const total = inventory.reduce((sum, item) => sum + item.price, 0);
+        balance += total;
+        inventory = [];
+        saveState();
+        renderInventory();
+    }
+
+    // Init
+    renderCases();
+    updateUI();
+</script>
+
+</body>
+</html>
