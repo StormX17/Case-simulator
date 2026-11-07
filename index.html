@@ -38,7 +38,6 @@
             overflow-x: hidden;
         }
 
-        /* Header */
         header {
             background-color: var(--bg-card);
             padding: 12px 16px;
@@ -71,7 +70,6 @@
             font-size: 0.95rem;
         }
 
-        /* Navigation Tabs */
         .tabs {
             display: flex;
             background: var(--bg-card);
@@ -112,7 +110,6 @@
         .section-view { display: none; }
         .section-view.active { display: block; }
 
-        /* Daily All-Cases Banner */
         .daily-chest-banner {
             background: linear-gradient(135deg, #1e1b4b, #311042);
             border: 1px solid var(--purple);
@@ -136,7 +133,6 @@
             white-space: nowrap;
         }
 
-        /* Cases Grid */
         .cases-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
@@ -190,7 +186,6 @@
             font-size: 0.82rem;
         }
 
-        /* Case Opening View */
         #case-view { display: none; }
         .back-btn {
             background: var(--bg-card);
@@ -318,7 +313,6 @@
             border-radius: 4px;
         }
 
-        /* Inventory & Selection Grids */
         .inventory-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -360,7 +354,6 @@
             width: 100%;
         }
 
-        /* Cards & Forms */
         .card-box {
             background: var(--bg-card);
             border: 1px solid #252d3d;
@@ -394,7 +387,7 @@
         }
         .btn-main:disabled { opacity: 0.45; cursor: not-allowed; }
 
-        /* Double Game (Animated Wheel) */
+        /* Double Game */
         .double-wrapper {
             position: relative;
             width: 100%;
@@ -455,49 +448,51 @@
         .btn-black { background: #2d3442; border: 1px solid #4b5563; }
         .btn-green { background: var(--green); color: #000; }
 
-        /* Upgrade Animation Container */
-        .upgrade-anim-box {
+        /* Upgrade Wheel */
+        .upgrade-wheel-box {
             position: relative;
-            width: 100%;
-            height: 90px;
-            background: #07090d;
-            border: 2px solid #252d3d;
-            border-radius: 12px;
+            width: 160px;
+            height: 160px;
+            margin: 15px auto;
+            border-radius: 50%;
+            background: #222d3d;
+            border: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            margin: 12px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        .upgrade-pointer {
+        .upgrade-wheel-inner {
             position: absolute;
-            top: 0; bottom: 0; left: 50%;
-            width: 3px;
-            background: var(--accent);
-            z-index: 10;
-            box-shadow: 0 0 10px var(--accent);
+            inset: 0;
+            border-radius: 50%;
+            transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1);
         }
-        .upgrade-slider-track {
-            display: flex;
-            height: 100%;
-            align-items: center;
-            will-change: transform;
+        .upgrade-pointer-top {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; 
+            height: 0; 
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 14px solid var(--gold);
+            z-index: 20;
         }
-        .upgrade-slider-item {
-            min-width: 80px;
-            height: 70px;
-            margin: 0 4px;
+        .upgrade-center-hub {
+            width: 50px;
+            height: 50px;
             background: var(--bg-card);
-            border-radius: 6px;
+            border-radius: 50%;
+            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            flex-shrink: 0;
-            border: 1px solid #252d3d;
+            font-size: 1.2rem;
+            border: 2px solid #3a4454;
         }
 
-        /* Tasks */
         .task-row {
             display: flex;
             justify-content: space-between;
@@ -524,7 +519,6 @@
             cursor: not-allowed;
         }
 
-        /* Modal / Toast */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -631,22 +625,17 @@
 
         <!-- UPGRADE TAB -->
         <div id="upgrade-tab" class="section-view">
-            <div class="card-box">
+            <div class="card-box" style="text-align: center;">
                 <h2 style="font-size:1rem;">⚡ Апгрейд скинов (80% – 1%)</h2>
-                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
-                    Выберите 1 скин из инвентаря. Минимальный прирост +20% (<b>шанс 80%</b>), максимальный в <b>50 раз</b> (<b>шанс 1%</b>).
-                </p>
-                <div id="upgrade-selected-info" style="margin:10px 0; font-size:0.82rem; color:#d1d5db;">Скин не выбран</div>
+                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">Зеленый сектор — ваш шанс на победу!</p>
+                
+                <div id="upgrade-selected-info" style="margin:8px 0; font-size:0.82rem; color:#d1d5db;">Скин не выбран</div>
                 <input type="number" id="upgrade-target-val" class="input-field" placeholder="Желаемая стоимость ($)" oninput="calcUpgradeChance()">
                 
-                <!-- Upgrade Animated Roulette -->
-                <div class="upgrade-anim-box">
-                    <div class="upgrade-pointer"></div>
-                    <div class="upgrade-slider-track" id="upgrade-slider-track">
-                        <div class="upgrade-slider-item">❌</div>
-                        <div class="upgrade-slider-item">🎯</div>
-                        <div class="upgrade-slider-item">⚡</div>
-                    </div>
+                <div class="upgrade-wheel-box">
+                    <div class="upgrade-pointer-top"></div>
+                    <div class="upgrade-wheel-inner" id="upgrade-wheel-inner"></div>
+                    <div class="upgrade-center-hub">🎯</div>
                 </div>
 
                 <div id="upgrade-chance-info" style="margin-bottom: 10px; font-weight: 800; color: var(--accent); font-size:0.9rem;">Шанс: 0%</div>
@@ -661,7 +650,6 @@
                 <h2 style="font-size:1.05rem;">🎲 Дабл (Выбор цвета)</h2>
                 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Красный: <b>2x</b> | Черный: <b>2x</b> | Зеленый (1 шт.): <b>14x</b></p>
                 
-                <!-- Animated Double Wheel -->
                 <div class="double-wrapper">
                     <div class="double-line"></div>
                     <div class="double-track" id="double-track"></div>
@@ -735,13 +723,11 @@
     </div>
 
     <script>
-        // Telegram WebApp init
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
         }
 
-        // ==================== 15 COLLECTIONS DATA (RU) ====================
         const casesData = {
             "all_in_knife": {
                 name: "All-In Knife Case", price: 500, icon: "🔪", vip: true,
@@ -893,7 +879,6 @@
             }
         };
 
-        // ==================== 30 PROMO CODES ====================
         const promoCodesList = [
             "START500", "CS2KING26", "DRAGON100", "EMERALD77", "TITAN2014",
             "BLUEGEM50", "VICEGLOVE", "KNIFEDROP", "LUCKYCASE", "UPGRADE80",
@@ -903,7 +888,6 @@
             "GOLDKNIFE", "MAJOR2026", "HEADSHOT1", "CLUTCH1V5", "ACEMASTER"
         ];
 
-        // ==================== 50 DAILY TASKS POOL ====================
         const all50Tasks = [
             { id: 1, title: "Открыть 1 кейс", type: "open_case", target: 1, reward: 25 },
             { id: 2, title: "Продать 1 скин", type: "sell_skin", target: 1, reward: 15 },
@@ -957,7 +941,6 @@
             { id: 50, title: "Сделать 3 контракта", type: "do_contract", target: 3, reward: 140 }
         ];
 
-        // ==================== STATE MANAGEMENT ====================
         let state = JSON.parse(localStorage.getItem('cs2_sim_state')) || {
             balance: 0.00,
             inventory: [],
@@ -987,7 +970,6 @@
             document.getElementById('daily-cases-progress').innerText = `${state.openedTodayCases.length} / ${Object.keys(casesData).length}`;
         }
 
-        // ==================== NAVIGATION ====================
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             if (btn) btn.classList.add('active');
@@ -1000,15 +982,12 @@
             if (tabId === 'contract') renderContract();
             if (tabId === 'upgrade') {
                 renderUpgradeInventory();
-                initUpgradeSlider();
+                initUpgradeWheel(0);
             }
-            if (tabId === 'double') {
-                renderDoubleWheel();
-            }
+            if (tabId === 'double') renderDoubleWheel();
             if (tabId === 'tasks') renderTasks();
         }
 
-        // ==================== RENDER CASES ====================
         function renderCases() {
             const grid = document.getElementById('cases-grid');
             grid.innerHTML = '';
@@ -1096,7 +1075,6 @@
             return items[0];
         }
 
-        // ==================== OPEN CASE LOGIC ====================
         let isOpening = false;
         function startOpening(count) {
             if (isOpening) return;
@@ -1137,8 +1115,11 @@
 
             setTimeout(() => {
                 isOpening = false;
+                
+                let finalWonList = [];
                 for(let k = 0; k < count; k++) {
                     const itemToAdd = (k === 0) ? winningItem : getRandomItem(c.items);
+                    finalWonList.push(itemToAdd);
                     state.inventory.unshift({ ...itemToAdd, id: Date.now() + Math.random() });
                 }
 
@@ -1165,11 +1146,15 @@
                 if (currentCaseId === 'riptide') updateTaskProgress('open_riptide', 1);
 
                 saveState();
-                showModal("Выигрыш!", `Вы получили: <b>${winningItem.name}</b> ($${winningItem.price.toLocaleString()})`);
+                
+                let modalText = `Вы получили: <b>${winningItem.name}</b> ($${winningItem.price.toLocaleString()})`;
+                if (count > 1) {
+                    modalText = `Открыто кейсов: ${count} шт. Последний главный приз: <b>${winningItem.name}</b>`;
+                }
+                showModal("Выигрыш!", modalText);
             }, 4100);
         }
 
-        // ==================== INVENTORY ====================
         function renderInventory() {
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = '';
@@ -1211,7 +1196,6 @@
             renderInventory();
         }
 
-        // ==================== CONTRACT SYSTEM ====================
         let selectedContractIndices = [];
         function renderContract() {
             const grid = document.getElementById('contract-inventory');
@@ -1295,7 +1279,6 @@
             showModal("Контракт выполнен!", `Вы получили новый скин: <b>${reward.name}</b> ($${reward.price.toFixed(2)})`);
         }
 
-        // ==================== UPGRADE SYSTEM & ANIMATION ====================
         let selectedUpgradeIdx = null;
         function renderUpgradeInventory() {
             const grid = document.getElementById('upgrade-inventory');
@@ -1326,14 +1309,11 @@
             calcUpgradeChance();
         }
 
-        function initUpgradeSlider() {
-            const track = document.getElementById('upgrade-slider-track');
-            track.innerHTML = '';
-            for (let i = 0; i < 30; i++) {
-                track.innerHTML += `<div class="upgrade-slider-item">${Math.random() > 0.5 ? '⚡' : '🎯'}</div>`;
-            }
-            track.style.transition = 'none';
-            track.style.transform = 'translateX(0px)';
+        function initUpgradeWheel(chance) {
+            const wheel = document.getElementById('upgrade-wheel-inner');
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            wheel.style.background = `conic-gradient(var(--green) 0deg ${chance * 3.6}deg, #2a3547 ${chance * 3.6}deg 360deg)`;
         }
 
         function calcUpgradeChance() {
@@ -1361,6 +1341,7 @@
             if (chance < 1) chance = 1;
 
             chanceInfo.innerText = `Шанс успеха: ${chance.toFixed(1)}% (Множитель: ${multiplier.toFixed(1)}x)`;
+            initUpgradeWheel(chance);
             btn.disabled = false;
         }
 
@@ -1380,29 +1361,23 @@
             isUpgrading = true;
             document.getElementById('btn-exec-upgrade').disabled = true;
 
-            // Animate Upgrade Track
-            const track = document.getElementById('upgrade-slider-track');
-            track.innerHTML = '';
-            for (let i = 0; i < 30; i++) {
-                let sym = '❌';
-                if (i === 22) {
-                    sym = isSuccess ? '✅' : '❌';
-                } else {
-                    sym = Math.random() > 0.5 ? '⚡' : '🎯';
-                }
-                track.innerHTML += `<div class="upgrade-slider-item" style="border-color:${i===22?(isSuccess?'var(--green)':'var(--red)'):'#252d3d'}">${sym}</div>`;
+            const wheel = document.getElementById('upgrade-wheel-inner');
+            wheel.style.transition = 'none';
+            wheel.style.transform = 'rotate(0deg)';
+            wheel.offsetHeight;
+
+            let targetAngle = 0;
+            if (isSuccess) {
+                targetAngle = Math.random() * (chance * 3.6 - 10) + 5;
+            } else {
+                targetAngle = Math.random() * (360 - (chance * 3.6 + 10)) + (chance * 3.6 + 5);
             }
 
-            track.style.transition = 'none';
-            track.style.transform = 'translateX(0px)';
-            track.offsetHeight;
+            const fullSpins = 360 * 5;
+            const finalRotation = fullSpins + (360 - targetAngle);
 
-            const itemWidth = 88; // 80px + 8px margins
-            const randomOffset = (Math.random() - 0.5) * 40;
-            const targetX = -(22 * itemWidth - 140 + randomOffset);
-
-            track.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
-            track.style.transform = `translateX(${targetX}px)`;
+            wheel.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
+            wheel.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
                 isUpgrading = false;
@@ -1421,18 +1396,17 @@
                     state.inventory.unshift(reward);
                     saveState();
                     renderUpgradeInventory();
-                    initUpgradeSlider();
-                    showModal("Успех!", `Апгрейд прошел успешно! Вы выиграли скин на сумму $${targetVal.toLocaleString()}!`);
+                    initUpgradeWheel(chance);
+                    showModal("Успех!", `Стрелка попала в зеленую зону! Вы выиграли скин на сумму $${targetVal.toLocaleString()}!`);
                 } else {
                     saveState();
                     renderUpgradeInventory();
-                    initUpgradeSlider();
-                    showModal("Неудача", "К сожалению, апгрейд не удался, скин сгорел.");
+                    initUpgradeWheel(chance);
+                    showModal("Неудача", "Стрелка остановилась вне зеленой зоны, скин сгорел.");
                 }
             }, 3600);
         }
 
-        // ==================== DOUBLE MINI-GAME (ANIMATED WHEEL) ====================
         function renderDoubleWheel() {
             const track = document.getElementById('double-track');
             track.innerHTML = '';
@@ -1474,14 +1448,12 @@
             const track = document.getElementById('double-track');
             track.innerHTML = '';
 
-            // Roll winning color matching user intent probability roughly
             const roll = Math.random() * 100;
             let winningColor = 'black';
             if (roll < 48) winningColor = 'red';
             else if (roll < 96) winningColor = 'black';
             else winningColor = 'green';
 
-            // Build items with winning item at index 22
             let tilesData = [];
             for (let i = 0; i < 30; i++) {
                 let cType = 'black';
@@ -1506,7 +1478,7 @@
             track.style.transform = 'translateX(0px)';
             track.offsetHeight;
 
-            const tileWidth = 88; // 80px + 8px margins
+            const tileWidth = 88;
             const randomOffset = (Math.random() - 0.5) * 50;
             const targetX = -(22 * tileWidth - 160 + randomOffset);
 
@@ -1533,7 +1505,6 @@
             }, 3600);
         }
 
-        // ==================== PROMO CODES & TASKS ====================
         function applyPromo() {
             const code = document.getElementById('promo-input').value.trim().toUpperCase();
             if (!code) return;
@@ -1613,14 +1584,12 @@
             showModal("Награда получена!", `Вы успешно забрали награду: <b>+$${reward}</b> на баланс!`);
         }
 
-        // ==================== DONATE ====================
         function donateStars(stars, amount) {
             state.balance += amount;
             saveState();
             showModal("Успешно!", `Вы успешно пополнили баланс на <b>$${amount.toLocaleString()}</b> за ${stars} ⭐!`);
         }
 
-        // ==================== MODAL ====================
         function showModal(title, body) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-body').innerHTML = body;
@@ -1631,7 +1600,6 @@
             document.getElementById('win-modal').style.display = 'none';
         }
 
-        // Init
         saveState();
     </script>
 </body>
