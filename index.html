@@ -897,6 +897,289 @@
             <div class="card-box">
                 <h2 style="font-size:1rem;">🔄 Контракт обмена (Trade-Up)</h2>
                 <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
+         border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+            background: #222938;
+        }
+        .inv-item.border-blue { border-bottom-color: var(--blue); }
+        .inv-item.border-purple { border-bottom-color: var(--purple); }
+        .inv-item.border-pink { border-bottom-color: var(--pink); }
+        .inv-item.border-red { border-bottom-color: var(--red); }
+        .inv-item.border-gold { border-bottom-color: var(--gold); }
+
+        .sell-btn {
+            margin-top: 6px;
+            background: rgba(235, 75, 75, 0.18);
+            border: 1px solid var(--red);
+            color: #fca5a5;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .card-box {
+            background: var(--bg-card);
+            border: 1px solid #252d3d;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid #252d3d;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            outline: none;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-main {
+            width: 100%;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 11px;
+            border-radius: 8px;
+            font-weight: 800;
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
+        .btn-main:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        /* Double Game */
+        .double-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            background: #07090d;
+            border: 2px solid #252d3d;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        .double-line {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 3px;
+            background: var(--accent);
+            z-index: 10;
+            box-shadow: 0 0 12px var(--accent);
+        }
+        .double-track {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            will-change: transform;
+        }
+        .double-tile {
+            min-width: 80px;
+            height: 80px;
+            margin: 0 4px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+        .dt-red { background: var(--red); color: #fff; }
+        .dt-black { background: #222834; color: #fff; border: 1px solid #3f4756; }
+        .dt-green { background: var(--green); color: #000; }
+
+        .double-colors {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .color-btn {
+            flex: 1;
+            padding: 12px 6px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 800;
+            color: white;
+            cursor: pointer;
+            font-size: 0.82rem;
+        }
+        .btn-red { background: var(--red); }
+        .btn-black { background: #2d3442; border: 1px solid #4b5563; }
+        .btn-green { background: var(--green); color: #000; }
+
+        /* Upgrade Wheel */
+        .upgrade-wheel-box {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            margin: 15px auto;
+            border-radius: 50%;
+            background: #222d3d;
+            border: 4px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .upgrade-wheel-inner {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            transition: transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1);
+        }
+        .upgrade-pointer-top {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; 
+            height: 0; 
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 14px solid var(--gold);
+            z-index: 20;
+        }
+        .upgrade-center-hub {
+            width: 50px;
+            height: 50px;
+            background: var(--bg-card);
+            border-radius: 50%;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 2px solid #3a4454;
+        }
+
+        .task-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-dark);
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #252d3d;
+        }
+        .task-claim-btn {
+            background: var(--green);
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        .task-claim-btn:disabled {
+            background: #252d3d;
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding: 16px;
+        }
+        .modal-card {
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            animation: popIn 0.25s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🎯 CS2 CASE PRO</div>
+        <div class="balance-box">$<span id="user-balance">0.00</span></div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('cases', this)">📦 Кейсы</button>
+        <button class="tab-btn" onclick="switchTab('inventory', this)">🎒 Инвентарь</button>
+        <button class="tab-btn" onclick="switchTab('contract', this)">🔄 Контракт</button>
+        <button class="tab-btn" onclick="switchTab('upgrade', this)">⚡ Апгрейд</button>
+        <button class="tab-btn" onclick="switchTab('double', this)">🎲 Дабл</button>
+        <button class="tab-btn" onclick="switchTab('tasks', this)">🎯 Задания & Промо</button>
+        <button class="tab-btn" onclick="switchTab('donate', this)">⭐ Донат</button>
+    </div>
+
+    <div class="container">
+        <!-- CASES TAB -->
+        <div id="cases-tab" class="section-view active">
+            <div class="daily-chest-banner">
+                <div class="daily-chest-info">
+                    <h4>🔪 Ежедневный челлендж кейсов</h4>
+                    <p>Откройте все 15 кейсов хотя бы 1 раз за день и получите <b>Случайный нож</b> в подарок!</p>
+                </div>
+                <div class="progress-pill" id="daily-cases-progress">0 / 15</div>
+            </div>
+            <div class="cases-grid" id="cases-grid"></div>
+        </div>
+
+        <!-- CASE OPENING VIEW -->
+        <div id="case-view">
+            <button class="back-btn" onclick="closeCaseView()">← Назад к кейсам</button>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 id="active-case-title" style="font-size:1.1rem;">Кейс</h2>
+                <span id="active-case-price-tag" style="color:var(--accent); font-weight:800;">$0</span>
+            </div>
+
+            <div class="roulette-wrapper">
+                <div class="roulette-line"></div>
+                <div class="roulette-track" id="roulette-track"></div>
+            </div>
+
+            <div class="open-btns-group">
+                <button class="open-btn" id="btn-open-1" onclick="startOpening(1)">Открыть ($<span id="case-price-val">0</span>)</button>
+                <button class="open-btn btn-5x" id="btn-open-5" onclick="startOpening(5)">Быстро 5x</button>
+            </div>
+
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin: 12px 0 6px; font-weight:700;">Содержимое и шансы выпадения:</div>
+            <div class="contents-grid" id="case-contents"></div>
+        </div>
+
+        <!-- INVENTORY TAB -->
+        <div id="inventory-tab" class="section-view">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div>
+                    <h2 style="font-size:1.05rem;">Мой инвентарь</h2>
+                    <p id="inv-total" style="font-size:0.8rem; color: var(--text-muted);">Стоимость: $0.00 (0 шт.)</p>
+                </div>
+                <button onclick="sellAllSkins()" style="background:var(--red); color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:700; font-size:0.75rem; cursor:pointer;">Продать все</button>
+            </div>
+            <div class="inventory-grid" id="inventory-grid"></div>
+        </div>
+
+        <!-- CONTRACT TAB -->
+        <div id="contract-tab" class="section-view">
+            <div class="card-box">
+                <h2 style="font-size:1rem;">🔄 Контракт обмена (Trade-Up)</h2>
+                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">
                     Выберите <b>5 скинов</b> одного цвета для перехода на следующий уровень:<br>
                     🔵 5х Синих ➔ 🟣 1х Фиолетовый ➔ 🩷 1х Розовый ➔ 🔴 1х Красный ➔ 🟡 1х Желтый (Нож/Перчатки)
                 </p>
