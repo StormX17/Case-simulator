@@ -394,26 +394,47 @@
         }
         .btn-main:disabled { opacity: 0.45; cursor: not-allowed; }
 
-        /* Double Game */
-        .double-wheel {
-            display: flex;
-            gap: 4px;
-            overflow: hidden;
+        /* Double Game (Animated Wheel) */
+        .double-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100px;
             background: #07090d;
-            padding: 10px;
-            border-radius: 10px;
+            border: 2px solid #252d3d;
+            border-radius: 12px;
+            overflow: hidden;
             margin: 12px 0;
+        }
+        .double-line {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 3px;
+            background: var(--accent);
+            z-index: 10;
+            box-shadow: 0 0 12px var(--accent);
+        }
+        .double-track {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            will-change: transform;
+        }
+        .double-tile {
+            min-width: 80px;
+            height: 80px;
+            margin: 0 4px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
+            font-weight: 900;
+            font-size: 0.95rem;
+            flex-shrink: 0;
         }
-        .d-tile {
-            width: 34px; height: 34px;
-            border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.75rem;
-        }
-        .d-red { background: var(--red); color: #fff; }
-        .d-black { background: #262b36; color: #fff; border: 1px solid #3f4756; }
-        .d-green { background: var(--green); color: #000; }
+        .dt-red { background: var(--red); color: #fff; }
+        .dt-black { background: #222834; color: #fff; border: 1px solid #3f4756; }
+        .dt-green { background: var(--green); color: #000; }
 
         .double-colors {
             display: flex;
@@ -433,6 +454,48 @@
         .btn-red { background: var(--red); }
         .btn-black { background: #2d3442; border: 1px solid #4b5563; }
         .btn-green { background: var(--green); color: #000; }
+
+        /* Upgrade Animation Container */
+        .upgrade-anim-box {
+            position: relative;
+            width: 100%;
+            height: 90px;
+            background: #07090d;
+            border: 2px solid #252d3d;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .upgrade-pointer {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            width: 3px;
+            background: var(--accent);
+            z-index: 10;
+            box-shadow: 0 0 10px var(--accent);
+        }
+        .upgrade-slider-track {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            will-change: transform;
+        }
+        .upgrade-slider-item {
+            min-width: 80px;
+            height: 70px;
+            margin: 0 4px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            border: 1px solid #252d3d;
+        }
 
         /* Tasks */
         .task-row {
@@ -575,6 +638,17 @@
                 </p>
                 <div id="upgrade-selected-info" style="margin:10px 0; font-size:0.82rem; color:#d1d5db;">Скин не выбран</div>
                 <input type="number" id="upgrade-target-val" class="input-field" placeholder="Желаемая стоимость ($)" oninput="calcUpgradeChance()">
+                
+                <!-- Upgrade Animated Roulette -->
+                <div class="upgrade-anim-box">
+                    <div class="upgrade-pointer"></div>
+                    <div class="upgrade-slider-track" id="upgrade-slider-track">
+                        <div class="upgrade-slider-item">❌</div>
+                        <div class="upgrade-slider-item">🎯</div>
+                        <div class="upgrade-slider-item">⚡</div>
+                    </div>
+                </div>
+
                 <div id="upgrade-chance-info" style="margin-bottom: 10px; font-weight: 800; color: var(--accent); font-size:0.9rem;">Шанс: 0%</div>
                 <button class="btn-main" id="btn-exec-upgrade" onclick="executeUpgrade()" disabled>Совершить апгрейд</button>
             </div>
@@ -587,17 +661,13 @@
                 <h2 style="font-size:1.05rem;">🎲 Дабл (Выбор цвета)</h2>
                 <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Красный: <b>2x</b> | Черный: <b>2x</b> | Зеленый (1 шт.): <b>14x</b></p>
                 
-                <div class="double-wheel" id="double-wheel">
-                    <div class="d-tile d-red">2x</div>
-                    <div class="d-tile d-black">2x</div>
-                    <div class="d-tile d-red">2x</div>
-                    <div class="d-tile d-green">14x</div>
-                    <div class="d-tile d-black">2x</div>
-                    <div class="d-tile d-red">2x</div>
-                    <div class="d-tile d-black">2x</div>
+                <!-- Animated Double Wheel -->
+                <div class="double-wrapper">
+                    <div class="double-line"></div>
+                    <div class="double-track" id="double-track"></div>
                 </div>
 
-                <div id="double-status" style="font-size:1.1rem; font-weight:800; margin:10px 0; min-height:26px;">Выберите цвет и сделайте ставку!</div>
+                <div id="double-status" style="font-size:1.05rem; font-weight:800; margin:10px 0; min-height:24px;">Выберите цвет и сделайте ставку!</div>
                 <input type="number" id="double-bet" class="input-field" placeholder="Сумма ставки ($)" min="0.1" step="0.1">
                 
                 <div class="double-colors">
@@ -823,7 +893,7 @@
             }
         };
 
-        // ==================== 30 PROMO CODES (100 USES EACH) ====================
+        // ==================== 30 PROMO CODES ====================
         const promoCodesList = [
             "START500", "CS2KING26", "DRAGON100", "EMERALD77", "TITAN2014",
             "BLUEGEM50", "VICEGLOVE", "KNIFEDROP", "LUCKYCASE", "UPGRADE80",
@@ -833,7 +903,7 @@
             "GOLDKNIFE", "MAJOR2026", "HEADSHOT1", "CLUTCH1V5", "ACEMASTER"
         ];
 
-        // ==================== 50 DAILY TASKS POOL (10 DAYS CYCLE) ====================
+        // ==================== 50 DAILY TASKS POOL ====================
         const all50Tasks = [
             { id: 1, title: "Открыть 1 кейс", type: "open_case", target: 1, reward: 25 },
             { id: 2, title: "Продать 1 скин", type: "sell_skin", target: 1, reward: 15 },
@@ -928,7 +998,13 @@
             if (tabId === 'cases') renderCases();
             if (tabId === 'inventory') renderInventory();
             if (tabId === 'contract') renderContract();
-            if (tabId === 'upgrade') renderUpgradeInventory();
+            if (tabId === 'upgrade') {
+                renderUpgradeInventory();
+                initUpgradeSlider();
+            }
+            if (tabId === 'double') {
+                renderDoubleWheel();
+            }
             if (tabId === 'tasks') renderTasks();
         }
 
@@ -1043,7 +1119,6 @@
             for (let i = 0; i < 40; i++) {
                 wonItems.push(getRandomItem(c.items));
             }
-            // Winning item at index 32
             const winningItem = getRandomItem(c.items);
             wonItems[32] = winningItem;
 
@@ -1051,12 +1126,10 @@
 
             track.style.transition = 'none';
             track.style.transform = 'translateX(0px)';
-
-            // Force reflow
             track.offsetHeight;
 
-            const itemWidth = 128; // 115px min-width + 8px margins
-            const randomOffset = (Math.random() - 0.5) * 80;
+            const itemWidth = 123;
+            const randomOffset = (Math.random() - 0.5) * 70;
             const targetX = -(32 * itemWidth - 180 + randomOffset);
 
             track.style.transition = 'transform 4s cubic-bezier(0.15, 0.85, 0.15, 1)';
@@ -1064,13 +1137,11 @@
 
             setTimeout(() => {
                 isOpening = false;
-                // Add to inventory
                 for(let k = 0; k < count; k++) {
                     const itemToAdd = (k === 0) ? winningItem : getRandomItem(c.items);
                     state.inventory.unshift({ ...itemToAdd, id: Date.now() + Math.random() });
                 }
 
-                // Track daily cases
                 if (!state.openedTodayCases.includes(currentCaseId)) {
                     state.openedTodayCases.push(currentCaseId);
                     if (state.openedTodayCases.length === Object.keys(casesData).length && !state.dailyKnifeClaimed) {
@@ -1173,7 +1244,6 @@
                     alert("Можно выбрать максимум 5 скинов!");
                     return;
                 }
-                // Verify same tier
                 if (selectedContractIndices.length > 0) {
                     const firstItem = state.inventory[selectedContractIndices[0]];
                     if (firstItem.type !== item.type) {
@@ -1200,7 +1270,6 @@
                 return;
             }
 
-            // Remove items descending
             selectedContractIndices.sort((a,b) => b - a);
             let avgPrice = 0;
             selectedContractIndices.forEach(idx => {
@@ -1209,7 +1278,6 @@
             });
             avgPrice = avgPrice / 5;
 
-            // Generate reward
             const rewardPrice = avgPrice * 2.2;
             const reward = {
                 name: "Контрактный трофей",
@@ -1227,7 +1295,7 @@
             showModal("Контракт выполнен!", `Вы получили новый скин: <b>${reward.name}</b> ($${reward.price.toFixed(2)})`);
         }
 
-        // ==================== UPGRADE SYSTEM ====================
+        // ==================== UPGRADE SYSTEM & ANIMATION ====================
         let selectedUpgradeIdx = null;
         function renderUpgradeInventory() {
             const grid = document.getElementById('upgrade-inventory');
@@ -1258,6 +1326,16 @@
             calcUpgradeChance();
         }
 
+        function initUpgradeSlider() {
+            const track = document.getElementById('upgrade-slider-track');
+            track.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                track.innerHTML += `<div class="upgrade-slider-item">${Math.random() > 0.5 ? '⚡' : '🎯'}</div>`;
+            }
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+        }
+
         function calcUpgradeChance() {
             if (selectedUpgradeIdx === null) return;
             const item = state.inventory[selectedUpgradeIdx];
@@ -1278,8 +1356,6 @@
                 return;
             }
 
-            // Formula: 80% at 1.2x multiplier down to 1% at 50x multiplier
-            // Let's make it smooth: Chance = 80 / multiplier
             let chance = 80 / (multiplier / 1.2);
             if (chance > 80) chance = 80;
             if (chance < 1) chance = 1;
@@ -1288,8 +1364,9 @@
             btn.disabled = false;
         }
 
+        let isUpgrading = false;
         function executeUpgrade() {
-            if (selectedUpgradeIdx === null) return;
+            if (selectedUpgradeIdx === null || isUpgrading) return;
             const item = state.inventory[selectedUpgradeIdx];
             const targetVal = parseFloat(document.getElementById('upgrade-target-val').value) || 0;
             const multiplier = targetVal / item.price;
@@ -1298,31 +1375,84 @@
             if (chance < 1) chance = 1;
 
             const roll = Math.random() * 100;
-            state.inventory.splice(selectedUpgradeIdx, 1);
-            updateTaskProgress('do_upgrade', 1);
+            const isSuccess = roll <= chance;
 
-            if (roll <= chance) {
-                const reward = {
-                    name: "Апгрейд-Трофей",
-                    weapon: "Элитное оружие",
-                    type: targetVal > 1000 ? 'gold' : (targetVal > 100 ? 'red' : 'pink'),
-                    price: targetVal,
-                    emoji: "⚡",
-                    id: Date.now()
-                };
-                state.inventory.unshift(reward);
-                saveState();
-                renderUpgradeInventory();
-                showModal("Успех!", `Апгрейд прошел успешно! Вы выиграли скин на сумму $${targetVal.toLocaleString()}!`);
-            } else {
-                saveState();
-                renderUpgradeInventory();
-                showModal("Неудача", "К сожалению, апгрейд не удался, скин сгорел.");
+            isUpgrading = true;
+            document.getElementById('btn-exec-upgrade').disabled = true;
+
+            // Animate Upgrade Track
+            const track = document.getElementById('upgrade-slider-track');
+            track.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                let sym = '❌';
+                if (i === 22) {
+                    sym = isSuccess ? '✅' : '❌';
+                } else {
+                    sym = Math.random() > 0.5 ? '⚡' : '🎯';
+                }
+                track.innerHTML += `<div class="upgrade-slider-item" style="border-color:${i===22?(isSuccess?'var(--green)':'var(--red)'):'#252d3d'}">${sym}</div>`;
             }
+
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            track.offsetHeight;
+
+            const itemWidth = 88; // 80px + 8px margins
+            const randomOffset = (Math.random() - 0.5) * 40;
+            const targetX = -(22 * itemWidth - 140 + randomOffset);
+
+            track.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
+            track.style.transform = `translateX(${targetX}px)`;
+
+            setTimeout(() => {
+                isUpgrading = false;
+                state.inventory.splice(selectedUpgradeIdx, 1);
+                updateTaskProgress('do_upgrade', 1);
+
+                if (isSuccess) {
+                    const reward = {
+                        name: "Апгрейд-Трофей",
+                        weapon: "Элитное оружие",
+                        type: targetVal > 1000 ? 'gold' : (targetVal > 100 ? 'red' : 'pink'),
+                        price: targetVal,
+                        emoji: "⚡",
+                        id: Date.now()
+                    };
+                    state.inventory.unshift(reward);
+                    saveState();
+                    renderUpgradeInventory();
+                    initUpgradeSlider();
+                    showModal("Успех!", `Апгрейд прошел успешно! Вы выиграли скин на сумму $${targetVal.toLocaleString()}!`);
+                } else {
+                    saveState();
+                    renderUpgradeInventory();
+                    initUpgradeSlider();
+                    showModal("Неудача", "К сожалению, апгрейд не удался, скин сгорел.");
+                }
+            }, 3600);
         }
 
-        // ==================== DOUBLE MINI-GAME ====================
+        // ==================== DOUBLE MINI-GAME (ANIMATED WHEEL) ====================
+        function renderDoubleWheel() {
+            const track = document.getElementById('double-track');
+            track.innerHTML = '';
+            for (let i = 0; i < 30; i++) {
+                let colorClass = 'dt-black';
+                let txt = '2x';
+                let rand = Math.random() * 100;
+                if (rand < 48) { colorClass = 'dt-red'; txt = '2x'; }
+                else if (rand < 96) { colorClass = 'dt-black'; txt = '2x'; }
+                else { colorClass = 'dt-green'; txt = '14x'; }
+
+                track.innerHTML += `<div class="double-tile ${colorClass}">${txt}</div>`;
+            }
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+        }
+
+        let isDoubleSpinning = false;
         function playDouble(color) {
+            if (isDoubleSpinning) return;
             const betInput = parseFloat(document.getElementById('double-bet').value);
             const statusEl = document.getElementById('double-status');
 
@@ -1337,16 +1467,54 @@
 
             state.balance -= betInput;
             saveState();
+            isDoubleSpinning = true;
 
-            statusEl.innerText = "Крутим рулетку...";
+            statusEl.innerText = "Рулетка вращается...";
+
+            const track = document.getElementById('double-track');
+            track.innerHTML = '';
+
+            // Roll winning color matching user intent probability roughly
+            const roll = Math.random() * 100;
+            let winningColor = 'black';
+            if (roll < 48) winningColor = 'red';
+            else if (roll < 96) winningColor = 'black';
+            else winningColor = 'green';
+
+            // Build items with winning item at index 22
+            let tilesData = [];
+            for (let i = 0; i < 30; i++) {
+                let cType = 'black';
+                let tText = '2x';
+                if (i === 22) {
+                    cType = winningColor;
+                    tText = winningColor === 'green' ? '14x' : '2x';
+                } else {
+                    let r = Math.random() * 100;
+                    if (r < 48) { cType = 'red'; tText = '2x'; }
+                    else if (r < 96) { cType = 'black'; tText = '2x'; }
+                    else { cType = 'green'; tText = '14x'; }
+                }
+                tilesData.push({ type: cType, text: tText });
+            }
+
+            tilesData.forEach(item => {
+                track.innerHTML += `<div class="double-tile dt-${item.type}">${item.text}</div>`;
+            });
+
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(0px)';
+            track.offsetHeight;
+
+            const tileWidth = 88; // 80px + 8px margins
+            const randomOffset = (Math.random() - 0.5) * 50;
+            const targetX = -(22 * tileWidth - 160 + randomOffset);
+
+            track.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
+            track.style.transform = `translateX(${targetX}px)`;
 
             setTimeout(() => {
-                const roll = Math.random() * 100;
-                let winningColor = 'black';
-                if (roll < 48) winningColor = 'red';
-                else if (roll < 96) winningColor = 'black';
-                else winningColor = 'green';
-
+                isDoubleSpinning = false;
                 updateTaskProgress('play_double', 1);
                 if (color === 'red') updateTaskProgress('double_red', 1);
                 if (color === 'black') updateTaskProgress('double_black', 1);
@@ -1362,7 +1530,7 @@
                     saveState();
                     statusEl.innerHTML = `<span style="color:var(--red);">Проигрыш! Выпал ${winningColor.toUpperCase()}.</span>`;
                 }
-            }, 1000);
+            }, 3600);
         }
 
         // ==================== PROMO CODES & TASKS ====================
@@ -1399,7 +1567,6 @@
             const listEl = document.getElementById('daily-tasks-list');
             listEl.innerHTML = '';
 
-            // 5 tasks per day from the 50 pool
             const startIndex = state.dayIndex * 5;
             const todayTasks = all50Tasks.slice(startIndex, startIndex + 5);
 
