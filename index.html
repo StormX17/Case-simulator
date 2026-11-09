@@ -1,4 +1,4 @@
-html_content = """<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -58,6 +58,7 @@ html_content = """<!DOCTYPE html>
             display: flex;
             align-items: center;
             gap: 6px;
+            cursor: pointer;
         }
 
         .balance-box {
@@ -68,6 +69,7 @@ html_content = """<!DOCTYPE html>
             border-radius: 8px;
             font-weight: 800;
             font-size: 0.95rem;
+            cursor: pointer;
         }
 
         .tabs {
@@ -546,6 +548,17 @@ html_content = """<!DOCTYPE html>
             cursor: not-allowed;
         }
 
+        .shop-card {
+            background: var(--bg-card);
+            border: 1px solid var(--gold);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -575,12 +588,13 @@ html_content = """<!DOCTYPE html>
 <body>
 
     <header>
-        <div class="logo">🎯 CS2 CASE PRO</div>
-        <div class="balance-box">$<span id="user-balance">0.00</span></div>
+        <div class="logo" id="logo-click">🎯 CS2 CASE PRO</div>
+        <div class="balance-box" id="balance-click">$<span id="user-balance">0.00</span></div>
     </header>
 
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('cases', this)">📦 Кейсы</button>
+        <button class="tab-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
         <button class="tab-btn" onclick="switchTab('inventory', this)">🎒 Инвентарь</button>
         <button class="tab-btn" onclick="switchTab('contract', this)">🔄 Контракт</button>
         <button class="tab-btn" onclick="switchTab('upgrade', this)">⚡ Апгрейд</button>
@@ -600,6 +614,26 @@ html_content = """<!DOCTYPE html>
                 <div class="progress-pill" id="daily-cases-progress">0 / 0</div>
             </div>
             <div class="cases-grid" id="cases-grid"></div>
+        </div>
+
+        <!-- SHOP TAB -->
+        <div id="shop-tab" class="section-view">
+            <h2 style="font-size:1.1rem; margin-bottom:12px;">🛒 VIP Магазин (Maxsus xaridlar)</h2>
+            <div class="shop-card">
+                <div style="text-align:left;">
+                    <h4 style="color:var(--gold); font-size:0.95rem;">🔑 Admin Paroli va Qo‘llanma</h4>
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:3px;">Admin parolini sotib oling ($20,000,000,000) va ko‘rsatmani oling.</p>
+                </div>
+                <button class="btn-main" onclick="buyAdminPassword()" style="max-width:125px; padding:8px;">$20,000,000,000</button>
+            </div>
+            <div id="admin-manual-box" style="display:none;" class="card-box">
+                <h3 style="color:var(--green); margin-bottom:8px; font-size:0.95rem;">📖 Admin Qo‘llanmasi</h3>
+                <p style="font-size:0.8rem; line-height:1.4; color:#d1d5db; text-align:left;">
+                    <b>1. Parol:</b> <code>adminn</code><br>
+                    <b>2. Qanday ochish:</b> Ekranning yuqori qismidagi logotip yoki balans ustiga ketma-ket <b>5 marta</b> tez-tez bosing.<br>
+                    <b>3. Imkoniyatlar:</b> Ochilgan oynaga parolni kiritib, xohlagancha balans qo‘shishingiz va maxsus promokodlar yarata olasiz!
+                </p>
+            </div>
         </div>
 
         <!-- CASE OPENING VIEW -->
@@ -719,8 +753,8 @@ html_content = """<!DOCTYPE html>
         <div id="tasks-tab" class="section-view">
             <div class="card-box">
                 <h2 style="font-size:1rem;">🎟 Ввести промокод</h2>
-                <p style="color:var(--text-muted); font-size:0.76rem; margin:4px 0 10px;">Активируйте специальный код <b>FREE!67</b> для получения крупного бонуса ($1,000,000,000).</p>
-                <input type="text" id="promo-input" class="input-field" placeholder="Например: FREE!67">
+                <p style="color:var(--text-muted); font-size:0.76rem; margin:4px 0 10px;">Активируйте промокоды для получения бонусов ($10,000)!</p>
+                <input type="text" id="promo-input" class="input-field" placeholder="Например: PROMO1">
                 <button class="btn-main" onclick="applyPromo()">Активировать</button>
             </div>
 
@@ -744,6 +778,33 @@ html_content = """<!DOCTYPE html>
         </div>
     </div>
 
+    <!-- ADMIN MODAL -->
+    <div class="modal-overlay" id="admin-login-modal">
+        <div class="modal-card">
+            <h3 style="color:var(--accent); margin-bottom:10px;">🔒 Admin Panel Login</h3>
+            <input type="password" id="admin-pass-input" class="input-field" placeholder="Parolni kiriting">
+            <button class="btn-main" onclick="checkAdminPassword()">Kirish</button>
+            <button class="btn-main" onclick="closeAdminLogin()" style="background:#252d3d; color:#fff; margin-top:8px;">Yopish</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL MODAL -->
+    <div class="modal-overlay" id="admin-panel-modal">
+        <div class="modal-card" style="max-width: 420px;">
+            <h3 style="color:var(--accent); margin-bottom:10px;">👑 Admin Panel</h3>
+            <div style="text-align:left; font-size:0.85rem; margin-bottom:8px;">Balansni o'zgartirish:</div>
+            <input type="number" id="admin-balance-input" class="input-field" placeholder="Yangi balans ($)">
+            <button class="btn-main" onclick="adminSetBalance()" style="margin-bottom:14px;">Balansni yangilash</button>
+            
+            <div style="text-align:left; font-size:0.85rem; margin-bottom:8px;">Yangi Promokod qo'shish:</div>
+            <input type="text" id="admin-promo-code" class="input-field" placeholder="Promokod (masalan: MYPROMO)">
+            <input type="number" id="admin-promo-reward" class="input-field" placeholder="Mukofot ($)">
+            <button class="btn-main" onclick="adminAddPromo()" style="margin-bottom:14px;">Promokod qo'shish</button>
+
+            <button class="btn-main" onclick="closeAdminPanel()" style="background:#252d3d; color:#fff;">Chiqish</button>
+        </div>
+    </div>
+
     <script>
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
@@ -751,6 +812,27 @@ html_content = """<!DOCTYPE html>
         }
 
         const casesData = {
+            "allin_dragon": {
+                name: "All-In Dragon Lore", price: 10000, icon: "🐉", vip: true,
+                items: [
+                    { name: "AWP | Dragon Lore (Factory New)", weapon: "AWP", type: "gold", price: 30000, chance: 30, emoji: "🐉" },
+                    { name: "P250 | Sand Dune", weapon: "P250", type: "blue", price: 0.10, chance: 70, emoji: "🔫" }
+                ]
+            },
+            "allin_titan": {
+                name: "All-In Titan Holo", price: 20000, icon: "💎", vip: true,
+                items: [
+                    { name: "Katowice 2014 | Titan (Holo)", weapon: "Sticker", type: "gold", price: 70000, chance: 30, emoji: "💎" },
+                    { name: "Glock-18 | Groundwater", weapon: "Glock-18", type: "blue", price: 0.10, chance: 70, emoji: "🔫" }
+                ]
+            },
+            "billion_case": {
+                name: "10 Blrd $ Case", price: 1000000, icon: "💰", vip: true,
+                items: [
+                    { name: "Admin Paroli (Maxsus kalit)", weapon: "Parol", type: "gold", price: 20000000000, chance: 30, emoji: "🔑" },
+                    { name: "Galil AR | Sage Spray", weapon: "Galil AR", type: "blue", price: 0.10, chance: 70, emoji: "🔫" }
+                ]
+            },
             "oligarch": {
                 name: "Oligarch Case", price: 100000, icon: "👑", vip: true,
                 items: [
@@ -759,23 +841,6 @@ html_content = """<!DOCTYPE html>
                     { name: "StatTrak AK-47 Case Hardened (Blue Gem)", weapon: "AK-47", type: "gold", price: 200000, chance: 20, emoji: "🔥" },
                     { name: "★ Sport Gloves (Vice/Ultraviolet)", weapon: "Перчатки", type: "gold", price: 150000, chance: 20, emoji: "🧤" },
                     { name: "★ StatTrak Butterfly Gamma Doppler (Emerald)", weapon: "★ Бабочка", type: "gold", price: 300000, chance: 20, emoji: "🦋" }
-                ]
-            },
-            "risk_butterfly": {
-                name: "50/50 Butterfly Emerald", price: 100000, icon: "🦋", vip: true,
-                items: [
-                    { name: "★ Butterfly Gamma Doppler (Emerald)", weapon: "★ Бабочка", type: "gold", price: 200000, chance: 50, emoji: "🦋" },
-                    { name: "Песчаные дюны", weapon: "P250", type: "blue", price: 0.10, chance: 50, emoji: "🔫" }
-                ]
-            },
-            "risk_karambit": {
-                name: "20% Karambit Emerald", price: 50000, icon: "🗡️", vip: true,
-                items: [
-                    { name: "★ Karambit Gamma Doppler (Emerald)", weapon: "★ Керамбит", type: "gold", price: 150000, chance: 20, emoji: "🗡️" },
-                    { name: "Мусорный скин #1", weapon: "P250", type: "blue", price: 0.10, chance: 20, emoji: "🔫" },
-                    { name: "Мусорный скин #2", weapon: "Glock-18", type: "blue", price: 0.10, chance: 20, emoji: "🔫" },
-                    { name: "Мусорный скин #3", weapon: "USP-S", type: "blue", price: 0.10, chance: 20, emoji: "🔫" },
-                    { name: "Мусорный скин #4", weapon: "Galil AR", type: "blue", price: 0.10, chance: 20, emoji: "🔫" }
                 ]
             },
             "dreams": {
@@ -807,6 +872,15 @@ html_content = """<!DOCTYPE html>
                     { name: "Око Хоруса", weapon: "M4A4", type: "red", price: 280.00, chance: 2, emoji: "🦅" }
                 ]
             },
+            "gallery_col": {
+                name: "Gallery Collection", price: 4, icon: "🖼️", vip: false,
+                items: [
+                    { name: "Галерейный ствол", weapon: "CZ75-Auto", type: "blue", price: 0.15, chance: 75, emoji: "🔫" },
+                    { name: "Абстракция", weapon: "MAC-10", type: "purple", price: 0.60, chance: 16, emoji: "🎨" },
+                    { name: "Неоновый штрих", weapon: "SSG 08", type: "pink", price: 3.50, chance: 6, emoji: "🎨" },
+                    { name: "Шедевр эпохи", weapon: "M4A1-S", type: "red", price: 85.00, chance: 3, emoji: "🌟" }
+                ]
+            },
             "prisma": {
                 name: "Prisma Case", price: 3, icon: "🌈", vip: false,
                 items: [
@@ -819,7 +893,19 @@ html_content = """<!DOCTYPE html>
             }
         };
 
-        const promoCodesList = ["FREE!67", "START500", "CS2KING26", "DRAGON100"];
+        // 10 promos worth 10,000 each
+        let customPromos = {
+            "PROMO1": 10000,
+            "PROMO2": 10000,
+            "PROMO3": 10000,
+            "PROMO4": 10000,
+            "PROMO5": 10000,
+            "PROMO6": 10000,
+            "PROMO7": 10000,
+            "PROMO8": 10000,
+            "PROMO9": 10000,
+            "PROMO10": 10000
+        };
 
         const all50Tasks = [
             { id: 1, title: "Открыть 1 кейс", type: "open_case", target: 1, reward: 25 },
@@ -839,8 +925,14 @@ html_content = """<!DOCTYPE html>
             openedTodayCases: [],
             dailyKnifeClaimed: false,
             taskProgress: {},
-            claimedTasks: []
+            claimedTasks: [],
+            adminPurchased: false
         };
+
+        let savedPromos = JSON.parse(localStorage.getItem('cs2_custom_promos'));
+        if (savedPromos) {
+            customPromos = savedPromos;
+        }
 
         const todayStr = new Date().toDateString();
         if (state.lastDayStamp !== todayStr) {
@@ -851,8 +943,86 @@ html_content = """<!DOCTYPE html>
 
         function saveState() {
             localStorage.setItem('cs2_sim_state', JSON.stringify(state));
+            localStorage.setItem('cs2_custom_promos', JSON.stringify(customPromos));
             document.getElementById('user-balance').innerText = state.balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('daily-cases-progress').innerText = `${state.openedTodayCases.length} / ${Object.keys(casesData).length}`;
+            
+            if (state.adminPurchased) {
+                document.getElementById('admin-manual-box').style.display = 'block';
+            }
+        }
+
+        // Admin trigger 5 clicks
+        let clickCount = 0;
+        let clickTimer = null;
+        function handleAdminTrigger() {
+            clickCount++;
+            if (clickTimer) clearTimeout(clickTimer);
+            if (clickCount >= 5) {
+                clickCount = 0;
+                document.getElementById('admin-login-modal').style.display = 'flex';
+            } else {
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
+            }
+        }
+
+        document.getElementById('logo-click').addEventListener('click', handleAdminTrigger);
+        document.getElementById('balance-click').addEventListener('click', handleAdminTrigger);
+
+        function checkAdminPassword() {
+            const pass = document.getElementById('admin-pass-input').value;
+            if (pass === 'adminn') {
+                document.getElementById('admin-login-modal').style.display = 'none';
+                document.getElementById('admin-pass-input').value = '';
+                document.getElementById('admin-balance-input').value = state.balance;
+                document.getElementById('admin-panel-modal').style.display = 'flex';
+            } else {
+                alert("Noto'g'ri parol!");
+            }
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('admin-login-modal').style.display = 'none';
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('admin-panel-modal').style.display = 'none';
+        }
+
+        function adminSetBalance() {
+            const newBal = parseFloat(document.getElementById('admin-balance-input').value);
+            if (!isNaN(newBal)) {
+                state.balance = newBal;
+                saveState();
+                alert("Balans muvaffaqiyatli yangilandi!");
+            }
+        }
+
+        function adminAddPromo() {
+            const code = document.getElementById('admin-promo-code').value.trim().toUpperCase();
+            const reward = parseFloat(document.getElementById('admin-promo-reward').value);
+            if (code && !isNaN(reward) && reward > 0) {
+                customPromos[code] = reward;
+                saveState();
+                alert(`Promokod qo'shildi: ${code} ($${reward})`);
+                document.getElementById('admin-promo-code').value = '';
+                document.getElementById('admin-promo-reward').value = '';
+            } else {
+                alert("Ma'lumotlarni to'g'ri kiriting!");
+            }
+        }
+
+        function buyAdminPassword() {
+            const price = 20000000000;
+            if (state.balance < price) {
+                alert("Balansingizda yetarli mablag' yo'q! ($20,000,000,000 kerak)");
+                return;
+            }
+            state.balance -= price;
+            state.adminPurchased = true;
+            saveState();
+            document.getElementById('admin-manual-box').style.display = 'block';
+            showModal("Tabriklaymiz!", "Siz admin parolini ($20,000,000,000) muvaffaqiyatli xarid qildingiz! Do'kon bo'limida qo'llanma ochildi.");
         }
 
         function switchTab(tabId, btn) {
@@ -1022,6 +1192,12 @@ html_content = """<!DOCTYPE html>
                 saveState();
                 
                 let modalText = `Вы получили: <b>${winningItem.name}</b> ($${winningItem.price.toLocaleString()})`;
+                if (winningItem.name.includes("Admin Paroli")) {
+                    state.adminPurchased = true;
+                    saveState();
+                    document.getElementById('admin-manual-box').style.display = 'block';
+                    modalText = `Tabriklaymiz! Siz keysdan <b>Admin Parolini</b> yutib oldingiz! Magazin bo'limida qo'llanma ochildi.`;
+                }
                 if (count > 1) {
                     modalText = `Открыто кейсов: ${count} шт. Главный приз: <b>${winningItem.name}</b>`;
                 }
@@ -1463,40 +1639,21 @@ html_content = """<!DOCTYPE html>
             const code = document.getElementById('promo-input').value.trim().toUpperCase();
             if (!code) return;
 
-            if (code === "FREE!67") {
+            if (customPromos[code] !== undefined) {
                 if (state.usedPromos.includes(code)) {
                     alert("Вы уже активировали этот промокод!");
                     return;
                 }
-                if (!state.promoGlobalCounts[code]) state.promoGlobalCounts[code] = 0;
-                if (state.promoGlobalCounts[code] >= 100) {
-                    alert("Лимит активаций этого промокода исчерпан (100/100)!");
-                    return;
-                }
-                state.promoGlobalCounts[code]++;
                 state.usedPromos.push(code);
-                state.balance += 1000000000;
+                let rewardVal = customPromos[code];
+                state.balance += rewardVal;
                 saveState();
-                showModal("Промокод активирован!", `Вы получили супер-бонус <b>$1,000,000,000.00</b>!`);
+                showModal("Промокод активирован!", `Вы получили бонус <b>$${rewardVal.toLocaleString()}</b>!`);
                 document.getElementById('promo-input').value = '';
                 return;
             }
 
-            if (!promoCodesList.includes(code)) {
-                alert("Неверный промокод!");
-                return;
-            }
-
-            if (state.usedPromos.includes(code)) {
-                alert("Вы уже активировали этот промокод!");
-                return;
-            }
-
-            state.usedPromos.push(code);
-            state.balance += 500;
-            saveState();
-            showModal("Промокод активирован!", `Вы получили бонус <b>$500.00</b>!`);
-            document.getElementById('promo-input').value = '';
+            alert("Неверный промокод!");
         }
 
         function renderTasks() {
