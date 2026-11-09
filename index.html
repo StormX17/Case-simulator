@@ -448,6 +448,33 @@
         .btn-black { background: #2d3442; border: 1px solid #4b5563; }
         .btn-green { background: var(--green); color: #000; }
 
+        /* Slots Game */
+        .slots-container {
+            text-align: center;
+            background: var(--bg-dark);
+            border: 2px solid #252d3d;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 12px 0;
+        }
+        .slots-reel-box {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        .slot-reel {
+            width: 75px;
+            height: 85px;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+        }
+
         /* Upgrade Wheel */
         .upgrade-wheel-box {
             position: relative;
@@ -558,8 +585,8 @@
         <button class="tab-btn" onclick="switchTab('contract', this)">🔄 Контракт</button>
         <button class="tab-btn" onclick="switchTab('upgrade', this)">⚡ Апгрейд</button>
         <button class="tab-btn" onclick="switchTab('double', this)">🎲 Дабл</button>
-        <button class="tab-btn" onclick="switchTab('tasks', this)">🎯 Задания & Промо</button>
-        <button class="tab-btn" onclick="switchTab('donate', this)">⭐ Донат</button>
+        <button class="tab-btn" onclick="switchTab('slots', this)">🎰 Слоты</button>
+        <button class="tab-btn" onclick="switchTab('tasks', this)">🎯 Промо & Задания</button>
     </div>
 
     <div class="container">
@@ -568,9 +595,9 @@
             <div class="daily-chest-banner">
                 <div class="daily-chest-info">
                     <h4>🔪 Ежедневный челлендж кейсов</h4>
-                    <p>Откройте все 15 кейсов хотя бы 1 раз за день и получите <b>Случайный нож</b> в подарок!</p>
+                    <p>Откройте все кейсы хотя бы 1 раз за день и получите <b>Случайный нож</b> в подарок!</p>
                 </div>
-                <div class="progress-pill" id="daily-cases-progress">0 / 15</div>
+                <div class="progress-pill" id="daily-cases-progress">0 / 0</div>
             </div>
             <div class="cases-grid" id="cases-grid"></div>
         </div>
@@ -626,10 +653,13 @@
         <!-- UPGRADE TAB -->
         <div id="upgrade-tab" class="section-view">
             <div class="card-box" style="text-align: center;">
-                <h2 style="font-size:1rem;">⚡ Апгрейд скинов (80% – 1%)</h2>
-                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">Зеленый сектор — ваш шанс на победу!</p>
+                <h2 style="font-size:1rem;">⚡ Апгрейд (Скин или Баланс)</h2>
+                <p style="color: var(--text-muted); font-size: 0.78rem; margin-top: 4px;">Выберите предмет из инвентаря ИЛИ укажите сумму с баланса для ставки!</p>
                 
-                <div id="upgrade-selected-info" style="margin:8px 0; font-size:0.82rem; color:#d1d5db;">Скин не выбран</div>
+                <div id="upgrade-selected-info" style="margin:8px 0; font-size:0.82rem; color:#d1d5db;">Источник не выбран (используется баланс)</div>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <input type="number" id="upgrade-cash-bet" class="input-field" placeholder="Ставка с баланса ($)" oninput="calcUpgradeChance()" style="margin-bottom:0;">
+                </div>
                 <input type="number" id="upgrade-target-val" class="input-field" placeholder="Желаемая стоимость ($)" oninput="calcUpgradeChance()">
                 
                 <div class="upgrade-wheel-box">
@@ -644,7 +674,7 @@
             <div class="inventory-grid" id="upgrade-inventory"></div>
         </div>
 
-        <!-- DOUBLE MINI-GAME TAB -->
+        <!-- DOUBLE TAB -->
         <div id="double-tab" class="section-view">
             <div class="card-box" style="text-align: center;">
                 <h2 style="font-size:1.05rem;">🎲 Дабл (Выбор цвета)</h2>
@@ -666,12 +696,31 @@
             </div>
         </div>
 
+        <!-- SLOTS TAB -->
+        <div id="slots-tab" class="section-view">
+            <div class="card-box" style="text-align: center;">
+                <h2 style="font-size:1.05rem;">🎰 Слоты (Игровой автомат)</h2>
+                <p style="font-size:0.78rem; color:var(--text-muted); margin-top:4px;">Соберите комбинацию одинаковых символов для крупного выигрыша!</p>
+                
+                <div class="slots-container">
+                    <div class="slots-reel-box">
+                        <div class="slot-reel" id="slot-1">🍒</div>
+                        <div class="slot-reel" id="slot-2">🍋</div>
+                        <div class="slot-reel" id="slot-3">💎</div>
+                    </div>
+                    <div id="slot-status" style="font-weight:800; font-size:0.9rem; margin-bottom:10px; color:var(--accent);">Сделайте ставку и крутите!</div>
+                    <input type="number" id="slot-bet" class="input-field" placeholder="Ставка ($)" min="1" style="max-width:250px; margin:0 auto 10px; display:block;">
+                    <button class="btn-main" onclick="playSlots()" style="max-width:250px; margin:0 auto; display:block;">Крутить слоты</button>
+                </div>
+            </div>
+        </div>
+
         <!-- TASKS & PROMOS TAB -->
         <div id="tasks-tab" class="section-view">
             <div class="card-box">
                 <h2 style="font-size:1rem;">🎟 Ввести промокод</h2>
-                <p style="color:var(--text-muted); font-size:0.76rem; margin:4px 0 10px;">Для новых игроков код <b>START500</b> дает $500! Активируйте ежедневные промокоды.</p>
-                <input type="text" id="promo-input" class="input-field" placeholder="Например: START500">
+                <p style="color:var(--text-muted); font-size:0.76rem; margin:4px 0 10px;">Активируйте специальный код <b>FREE!67</b> для получения крупного бонуса ($1,000,000,000).</p>
+                <input type="text" id="promo-input" class="input-field" placeholder="Например: FREE!67">
                 <button class="btn-main" onclick="applyPromo()">Активировать</button>
             </div>
 
@@ -680,35 +729,8 @@
                     <h2 style="font-size:1rem;">📋 Ежедневные задания</h2>
                     <span id="task-day-badge" style="font-size:0.75rem; background:rgba(245,158,11,0.15); color:var(--accent); padding:3px 8px; border-radius:6px; font-weight:700;">День 1 / 10</span>
                 </div>
-                <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 10px;">Из 50 заданий каждый день доступно 5. Выполняйте их для получения бесплатного баланса!</p>
+                <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 10px;">Выполняйте задания для заработка баланса без доната!</p>
                 <div id="daily-tasks-list"></div>
-            </div>
-        </div>
-
-        <!-- DONATE TAB -->
-        <div id="donate-tab" class="section-view">
-            <div class="card-box" style="text-align: center;">
-                <h2 style="font-size:1.1rem;">⭐ Донат через Telegram Stars</h2>
-                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 8px 0 16px;">
-                    Быстрое пополнение игрового баланса с помощью Telegram Stars:
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <div style="background:var(--bg-dark); border:1px solid #252d3d; padding:14px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <div style="text-align:left;">
-                            <div style="font-weight:800; font-size:1.05rem; color:var(--green);">$10,000.00</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Стартовый VIP пакет</div>
-                        </div>
-                        <button onclick="donateStars(50, 10000)" style="background:var(--accent); color:#000; border:none; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;">50 ⭐</button>
-                    </div>
-
-                    <div style="background:var(--bg-dark); border:1px solid var(--purple); padding:14px; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
-                        <div style="text-align:left;">
-                            <div style="font-weight:800; font-size:1.05rem; color:var(--gold);">$100,000.00</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted);">Пакет Олигарха</div>
-                        </div>
-                        <button onclick="donateStars(150, 100000)" style="background:var(--purple); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:800; cursor:pointer;">150 ⭐</button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -729,43 +751,31 @@
         }
 
         const casesData = {
-            "all_in_knife": {
-                name: "All-In Knife Case", price: 500, icon: "🔪", vip: true,
+            "oligarch": {
+                name: "Oligarch Case", price: 100000, icon: "👑", vip: true,
                 items: [
-                    { name: "Вандал", weapon: "Galil AR", type: "blue", price: 5, chance: 19, emoji: "🔫" },
-                    { name: "Песчаные дюны", weapon: "P250", type: "blue", price: 3, chance: 19, emoji: "🔫" },
-                    { name: "Вендетта", weapon: "CZ75-Auto", type: "blue", price: 4, chance: 19, emoji: "🔫" },
-                    { name: "Состояние", weapon: "MP5-SD", type: "blue", price: 4, chance: 19, emoji: "🔫" },
-                    { name: "Под водой", weapon: "M249", type: "blue", price: 4, chance: 19, emoji: "🔫" },
-                    { name: "Гамма-волны Изумруд", weapon: "★ Керамбит", type: "gold", price: 15000, chance: 5, emoji: "🗡️" }
+                    { name: "Titan (Holo) Katowice 2014", weapon: "Стикер", type: "gold", price: 70000, chance: 20, emoji: "💎" },
+                    { name: "AK-47 Case Hardened (Blue Gem)", weapon: "AK-47", type: "pink", price: 50000, chance: 20, emoji: "💎" },
+                    { name: "StatTrak AK-47 Case Hardened (Blue Gem)", weapon: "AK-47", type: "gold", price: 200000, chance: 20, emoji: "🔥" },
+                    { name: "★ Sport Gloves (Vice/Ultraviolet)", weapon: "Перчатки", type: "gold", price: 150000, chance: 20, emoji: "🧤" },
+                    { name: "★ StatTrak Butterfly Gamma Doppler (Emerald)", weapon: "★ Бабочка", type: "gold", price: 300000, chance: 20, emoji: "🦋" }
                 ]
             },
-            "all_in_dragon": {
-                name: "All-In Dragon Lore", price: 2500, icon: "🐉", vip: true,
+            "risk_butterfly": {
+                name: "50/50 Butterfly Emerald", price: 100000, icon: "🦋", vip: true,
                 items: [
-                    { name: "Валенс", weapon: "P250", type: "blue", price: 10, chance: 22.5, emoji: "🔫" },
-                    { name: "Выживший", weapon: "FAMAS", type: "blue", price: 15, chance: 22.5, emoji: "🔫" },
-                    { name: "Полосы", weapon: "SSG 08", type: "blue", price: 12, chance: 22.5, emoji: "🔫" },
-                    { name: "Кои", weapon: "Nova", type: "blue", price: 10, chance: 22.5, emoji: "🔫" },
-                    { name: "История о драконе", weapon: "AWP", type: "gold", price: 15000, chance: 10, emoji: "🐉" }
+                    { name: "★ Butterfly Gamma Doppler (Emerald)", weapon: "★ Бабочка", type: "gold", price: 200000, chance: 50, emoji: "🦋" },
+                    { name: "Песчаные дюны", weapon: "P250", type: "blue", price: 0.10, chance: 50, emoji: "🔫" }
                 ]
             },
-            "all_in_sticker": {
-                name: "All-In 2014 Sticker", price: 10000, icon: "🏷️", vip: true,
+            "risk_karambit": {
+                name: "20% Karambit Emerald", price: 50000, icon: "🗡️", vip: true,
                 items: [
-                    { name: "Бумажный Katowice", weapon: "Стикер", type: "blue", price: 50, chance: 47.5, emoji: "🏷️" },
-                    { name: "Фольг. Cologne", weapon: "Стикер", type: "purple", price: 150, chance: 47.5, emoji: "🏷️" },
-                    { name: "Titan (Holo) 2014", weapon: "Стикер", type: "gold", price: 70000, chance: 5, emoji: "💎" }
-                ]
-            },
-            "arms_deal": {
-                name: "The Arms Deal Collection", price: 1000, icon: "🖤", vip: true,
-                items: [
-                    { name: "Темная вода", weapon: "USP-S", type: "blue", price: 25, chance: 35, emoji: "🔫" },
-                    { name: "Ультрафиолет", weapon: "SG 553", type: "blue", price: 20, chance: 35, emoji: "🔫" },
-                    { name: "Гипноз", weapon: "Desert Eagle", type: "purple", price: 90, chance: 18, emoji: "🔫" },
-                    { name: "Удар молнии", weapon: "AWP", type: "purple", price: 350, chance: 10, emoji: "⚡" },
-                    { name: "Поверхностная закалка (Blue Gem)", weapon: "AK-47", type: "pink", price: 50000, chance: 2, emoji: "💎" }
+                    { name: "★ Karambit Gamma Doppler (Emerald)", weapon: "★ Керамбит", type: "gold", price: 150000, chance: 20, emoji: "🗡️" },
+                    { name: "Мусорный скин #1", weapon: "P250", type: "blue", price: 0.10, chance: 20, emoji: "🔫" },
+                    { name: "Мусорный скин #2", weapon: "Glock-18", type: "blue", price: 0.10, chance: 20, emoji: "🔫" },
+                    { name: "Мусорный скин #3", weapon: "USP-S", type: "blue", price: 0.10, chance: 20, emoji: "🔫" },
+                    { name: "Мусорный скин #4", weapon: "Galil AR", type: "blue", price: 0.10, chance: 20, emoji: "🔫" }
                 ]
             },
             "dreams": {
@@ -774,8 +784,7 @@
                     { name: "Ночной кошмар", weapon: "MP9", type: "blue", price: 0.10, chance: 75, emoji: "🔫" },
                     { name: "Морское видение", weapon: "MP7", type: "purple", price: 0.50, chance: 16, emoji: "🔫" },
                     { name: "Быстрые глазки", weapon: "FAMAS", type: "pink", price: 2.00, chance: 5, emoji: "🔫" },
-                    { name: "Звездный защитник", weapon: "AK-47", type: "red", price: 50.00, chance: 2, emoji: "🔥" },
-                    { name: "Тычковые ножи", weapon: "★ Тычковые ножи", type: "gold", price: 85.00, chance: 1, emoji: "🗡️" },
+                    { name: "Звездный защитник", weapon: "AK-47", type: "red", price: 50.00, chance: 3, emoji: "🔥" },
                     { name: "Гамма-волны Изумруд", weapon: "★ Бабочка", type: "gold", price: 15000.00, chance: 1, emoji: "🦋" }
                 ]
             },
@@ -785,28 +794,8 @@
                     { name: "Кибер-оболочка", weapon: "P2000", type: "blue", price: 0.10, chance: 75, emoji: "🔫" },
                     { name: "Сакаку", weapon: "M4A1-S", type: "purple", price: 0.50, chance: 14, emoji: "🔫" },
                     { name: "Злой рок", weapon: "AWP", type: "pink", price: 2.00, chance: 4, emoji: "🔫" },
-                    { name: "Хэдшот", weapon: "AK-47", type: "red", price: 50.00, chance: 2, emoji: "🔥" },
-                    { name: "Дикие цветы (Vice)", weapon: "★ Спортивные перчатки", type: "gold", price: 5000.00, chance: 5, emoji: "🧤" }
-                ]
-            },
-            "broken_fang": {
-                name: "Сломанный клык", price: 4, icon: "🐍", vip: false,
-                items: [
-                    { name: "Нулевой пациент", weapon: "G3SG1", type: "blue", price: 0.15, chance: 76, emoji: "🔫" },
-                    { name: "Кибербезопасность", weapon: "M4A4", type: "purple", price: 0.80, chance: 15, emoji: "🔫" },
-                    { name: "Монстр-охотник", weapon: "USP-S", type: "pink", price: 4.50, chance: 5, emoji: "🔫" },
-                    { name: "Принтстрим", weapon: "M4A1-S", type: "red", price: 120.00, chance: 2.5, emoji: "🤍" },
-                    { name: "Снежный леопард", weapon: "★ Перчатки вождения", type: "gold", price: 950.00, chance: 1.5, emoji: "🧤" }
-                ]
-            },
-            "riptide": {
-                name: "Хищные воды", price: 4, icon: "🦈", vip: false,
-                items: [
-                    { name: "Чума", weapon: "Glock-18", type: "blue", price: 0.15, chance: 76, emoji: "🔫" },
-                    { name: "Лилия", weapon: "M4A4", type: "purple", price: 0.90, chance: 15, emoji: "🔫" },
-                    { name: "Океанское движение", weapon: "Desert Eagle", type: "pink", price: 6.00, chance: 5, emoji: "🔫" },
-                    { name: "Муза", weapon: "AK-47", type: "red", price: 65.00, chance: 2.5, emoji: "🎨" },
-                    { name: "Жало (Lore)", weapon: "★ Бабочка", type: "gold", price: 1800.00, chance: 1.5, emoji: "🗡️" }
+                    { name: "Хэдшот", weapon: "AK-47", type: "red", price: 50.00, chance: 3, emoji: "🔥" },
+                    { name: "Дикие цветы (Vice)", weapon: "★ Спортивные перчатки", type: "gold", price: 5000.00, chance: 4, emoji: "🧤" }
                 ]
             },
             "anubis": {
@@ -818,127 +807,26 @@
                     { name: "Око Хоруса", weapon: "M4A4", type: "red", price: 280.00, chance: 2, emoji: "🦅" }
                 ]
             },
-            "fever_2014": {
-                name: "Fever & 2014 Legends", price: 3.5, icon: "🏆", vip: false,
-                items: [
-                    { name: "Синий ламинат", weapon: "AK-47", type: "blue", price: 0.25, chance: 75, emoji: "🔫" },
-                    { name: "Красная линия", weapon: "AK-47", type: "purple", price: 1.50, chance: 16, emoji: "🔫" },
-                    { name: "Азимов", weapon: "P90", type: "pink", price: 5.00, chance: 5, emoji: "🔫" },
-                    { name: "Вой (Легенда)", weapon: "M4A4", type: "red", price: 320.00, chance: 2.5, emoji: "🐺" },
-                    { name: "Градиент (Fade)", weapon: "★ Керамбит", type: "gold", price: 2200.00, chance: 1.5, emoji: "🗡️" }
-                ]
-            },
             "prisma": {
                 name: "Prisma Case", price: 3, icon: "🌈", vip: false,
                 items: [
                     { name: "За пределами", weapon: "AK-47", type: "blue", price: 0.12, chance: 76, emoji: "🔫" },
                     { name: "Атерис", weapon: "AWP", type: "purple", price: 0.70, chance: 15, emoji: "🐍" },
                     { name: "Рассерженная толпа", weapon: "Five-SeveN", type: "pink", price: 3.00, chance: 5, emoji: "🔫" },
-                    { name: "Император", weapon: "M4A4", type: "red", price: 45.00, chance: 1.5, emoji: "👑" },
-                    { name: "Сапфир", weapon: "★ Нож Тюремщика", type: "gold", price: 2400.00, chance: 2.5, emoji: "🗡️" }
-                ]
-            },
-            "cs20": {
-                name: "CS20 Case", price: 2.5, icon: "🎂", vip: false,
-                items: [
-                    { name: "Классик", weapon: "MAC-10", type: "blue", price: 0.10, chance: 77, emoji: "🔫" },
-                    { name: "Ацтек", weapon: "Five-SeveN", type: "purple", price: 0.55, chance: 15, emoji: "🔫" },
-                    { name: "Гидра", weapon: "MP9", type: "pink", price: 2.20, chance: 4.5, emoji: "🔫" },
-                    { name: "Дикий огонь", weapon: "AWP", type: "red", price: 55.00, chance: 2, emoji: "🔥" },
-                    { name: "Градиент", weapon: "★ Классический нож", type: "gold", price: 650.00, chance: 1.5, emoji: "🗡️" }
-                ]
-            },
-            "danger_zone": {
-                name: "Danger Zone Case", price: 2, icon: "☢️", vip: false,
-                items: [
-                    { name: "Магний", weapon: "M4A4", type: "blue", price: 0.10, chance: 78, emoji: "🔫" },
-                    { name: "Воспоминание", weapon: "USP-S", type: "purple", price: 0.45, chance: 14, emoji: "🔫" },
-                    { name: "Меха-пром", weapon: "Desert Eagle", type: "pink", price: 2.80, chance: 4.5, emoji: "🤖" },
-                    { name: "Азимов", weapon: "AK-47", type: "red", price: 48.00, chance: 2, emoji: "🧡" },
-                    { name: "Убийство", weapon: "★ Урсус", type: "gold", price: 480.00, chance: 1.5, emoji: "🗡️" }
-                ]
-            },
-            "gamma": {
-                name: "Gamma Case", price: 4, icon: "🧪", vip: false,
-                items: [
-                    { name: "Урожай", weapon: "SG 553", type: "blue", price: 0.15, chance: 76, emoji: "🔫" },
-                    { name: "Императорский дракон", weapon: "P2000", type: "purple", price: 0.85, chance: 15, emoji: "🐉" },
-                    { name: "Безлюдный космос", weapon: "M4A4", type: "pink", price: 4.00, chance: 5, emoji: "🚀" },
-                    { name: "Бунтарь", weapon: "Glock-18", type: "red", price: 40.00, chance: 2, emoji: "💀" },
-                    { name: "Жало", weapon: "★ Керамбит", type: "gold", price: 2100.00, chance: 2, emoji: "🗡️" }
-                ]
-            },
-            "spectre_vip": {
-                name: "Spectre Covert VIP", price: 1500, icon: "👑", vip: true,
-                items: [
-                    { name: "Нео-Нуар Элит", weapon: "AWP", type: "red", price: 450, chance: 40, emoji: "🔫" },
-                    { name: "Вулкан StatTrak", weapon: "AK-47", type: "red", price: 850, chance: 30, emoji: "🔫" },
-                    { name: "Вой (Контрабанда)", weapon: "M4A4", type: "gold", price: 4500, chance: 20, emoji: "🐺" },
-                    { name: "Рубин", weapon: "★ M9 Штык", type: "gold", price: 9500, chance: 10, emoji: "🗡️" }
+                    { name: "Император", weapon: "M4A4", type: "red", price: 45.00, chance: 2, emoji: "👑" },
+                    { name: "Сапфир", weapon: "★ Нож Тюремщика", type: "gold", price: 2400.00, chance: 2, emoji: "🗡️" }
                 ]
             }
         };
 
-        const promoCodesList = [
-            "START500", "CS2KING26", "DRAGON100", "EMERALD77", "TITAN2014",
-            "BLUEGEM50", "VICEGLOVE", "KNIFEDROP", "LUCKYCASE", "UPGRADE80",
-            "DOUBLE14X", "CONTRACT5", "VIPCS2PRO", "GAMMA2026", "PRISMAVIP",
-            "ANUBISGOD", "RIPTIDE99", "FANGCS2GO", "DREAMS777", "REVOLUT10",
-            "ARMSDEAL1", "DANGERZ0N", "CS20YEARS", "SPECTRE01", "FEVER2014",
-            "GOLDKNIFE", "MAJOR2026", "HEADSHOT1", "CLUTCH1V5", "ACEMASTER"
-        ];
+        const promoCodesList = ["FREE!67", "START500", "CS2KING26", "DRAGON100"];
 
         const all50Tasks = [
             { id: 1, title: "Открыть 1 кейс", type: "open_case", target: 1, reward: 25 },
             { id: 2, title: "Продать 1 скин", type: "sell_skin", target: 1, reward: 15 },
             { id: 3, title: "Сделать ставку в Дабл", type: "play_double", target: 1, reward: 20 },
             { id: 4, title: "Совершить 1 апгрейд", type: "do_upgrade", target: 1, reward: 40 },
-            { id: 5, title: "Сделать 1 контракт", type: "do_contract", target: 1, reward: 50 },
-            { id: 6, title: "Открыть 3 кейса", type: "open_case", target: 3, reward: 45 },
-            { id: 7, title: "Поставить на Красное в Дабл", type: "double_red", target: 1, reward: 25 },
-            { id: 8, title: "Продать 3 скина", type: "sell_skin", target: 3, reward: 30 },
-            { id: 9, title: "Открыть Dreams & Nightmares", type: "open_dreams", target: 1, reward: 20 },
-            { id: 10, title: "Совершить 2 апгрейда", type: "do_upgrade", target: 2, reward: 60 },
-            { id: 11, title: "Открыть 5 кейсов", type: "open_case", target: 5, reward: 75 },
-            { id: 12, title: "Поставить на Черное в Дабл", type: "double_black", target: 1, reward: 25 },
-            { id: 13, title: "Открыть Revolution", type: "open_revolution", target: 1, reward: 20 },
-            { id: 14, title: "Продать 5 скинов", type: "sell_skin", target: 5, reward: 40 },
-            { id: 15, title: "Сделать 1 контракт", type: "do_contract", target: 1, reward: 50 },
-            { id: 16, title: "Открыть 2 кейса", type: "open_case", target: 2, reward: 30 },
-            { id: 17, title: "Поставить на Зеленое в Дабл", type: "double_green", target: 1, reward: 50 },
-            { id: 18, title: "Открыть Anubis", type: "open_anubis", target: 1, reward: 15 },
-            { id: 19, title: "Совершить 1 апгрейд", type: "do_upgrade", target: 1, reward: 40 },
-            { id: 20, title: "Продать 4 скина", type: "sell_skin", target: 4, reward: 35 },
-            { id: 21, title: "Открыть 7 кейсов", type: "open_case", target: 7, reward: 100 },
-            { id: 22, title: "Открыть Prisma", type: "open_prisma", target: 1, reward: 20 },
-            { id: 23, title: "Сделать 3 ставки в Дабл", type: "play_double", target: 3, reward: 45 },
-            { id: 24, title: "Сделать 2 контракта", type: "do_contract", target: 2, reward: 90 },
-            { id: 25, title: "Продать 6 скинов", type: "sell_skin", target: 6, reward: 50 },
-            { id: 26, title: "Открыть 4 кейса", type: "open_case", target: 4, reward: 60 },
-            { id: 27, title: "Открыть CS20", type: "open_cs20", target: 1, reward: 20 },
-            { id: 28, title: "Совершить 3 апгрейда", type: "do_upgrade", target: 3, reward: 85 },
-            { id: 29, title: "Сделать 2 ставки в Дабл", type: "play_double", target: 2, reward: 35 },
-            { id: 30, title: "Продать 2 скина", type: "sell_skin", target: 2, reward: 20 },
-            { id: 31, title: "Открыть 6 кейсов", type: "open_case", target: 6, reward: 85 },
-            { id: 32, title: "Открыть Danger Zone", type: "open_danger", target: 1, reward: 15 },
-            { id: 33, title: "Сделать 1 контракт", type: "do_contract", target: 1, reward: 55 },
-            { id: 34, title: "Поставить на Красное в Дабл", type: "double_red", target: 1, reward: 25 },
-            { id: 35, title: "Продать 8 скинов", type: "sell_skin", target: 8, reward: 65 },
-            { id: 36, title: "Открыть 8 кейсов", type: "open_case", target: 8, reward: 120 },
-            { id: 37, title: "Открыть Gamma", type: "open_gamma", target: 1, reward: 25 },
-            { id: 38, title: "Совершить 2 апгрейда", type: "do_upgrade", target: 2, reward: 60 },
-            { id: 39, title: "Сделать 4 ставки в Дабл", type: "play_double", target: 4, reward: 60 },
-            { id: 40, title: "Продать 5 скинов", type: "sell_skin", target: 5, reward: 45 },
-            { id: 41, title: "Открыть 10 кейсов", type: "open_case", target: 10, reward: 150 },
-            { id: 42, title: "Открыть Сломанный клык", type: "open_fang", target: 1, reward: 25 },
-            { id: 43, title: "Сделать 2 контракта", type: "do_contract", target: 2, reward: 95 },
-            { id: 44, title: "Поставить на Черное в Дабл", type: "double_black", target: 1, reward: 25 },
-            { id: 45, title: "Продать 10 скинов", type: "sell_skin", target: 10, reward: 80 },
-            { id: 46, title: "Открыть 12 кейсов", type: "open_case", target: 12, reward: 200 },
-            { id: 47, title: "Открыть Хищные воды", type: "open_riptide", target: 1, reward: 25 },
-            { id: 48, title: "Совершить 4 апгрейда", type: "do_upgrade", target: 4, reward: 110 },
-            { id: 49, title: "Сделать 5 ставок в Дабл", type: "play_double", target: 5, reward: 75 },
-            { id: 50, title: "Сделать 3 контракта", type: "do_contract", target: 3, reward: 140 }
+            { id: 5, title: "Сделать 1 контракт", type: "do_contract", target: 1, reward: 50 }
         ];
 
         let state = JSON.parse(localStorage.getItem('cs2_sim_state')) || {
@@ -946,7 +834,7 @@
             inventory: [],
             usedPromos: [],
             promoGlobalCounts: {},
-            dayIndex: Math.floor(Date.now() / 86400000) % 10,
+            dayIndex: 0,
             lastDayStamp: new Date().toDateString(),
             openedTodayCases: [],
             dailyKnifeClaimed: false,
@@ -957,16 +845,13 @@
         const todayStr = new Date().toDateString();
         if (state.lastDayStamp !== todayStr) {
             state.lastDayStamp = todayStr;
-            state.dayIndex = Math.floor(Date.now() / 86400000) % 10;
             state.openedTodayCases = [];
             state.dailyKnifeClaimed = false;
-            state.taskProgress = {};
-            state.claimedTasks = [];
         }
 
         function saveState() {
             localStorage.setItem('cs2_sim_state', JSON.stringify(state));
-            document.getElementById('user-balance').innerText = state.balance.toFixed(2);
+            document.getElementById('user-balance').innerText = state.balance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             document.getElementById('daily-cases-progress').innerText = `${state.openedTodayCases.length} / ${Object.keys(casesData).length}`;
         }
 
@@ -1129,21 +1014,11 @@
                         state.inventory.unshift({
                             name: "Gamma-волны Изумруд (Бонус)", weapon: "★ Бабочка", type: "gold", price: 15000, emoji: "🦋", id: Date.now()
                         });
-                        showModal("Ежедневный бонус!", "Вы открыли все 15 кейсов за день и получили бесплатный нож ★ Бабочка Изумруд!");
+                        showModal("Ежедневный бонус!", "Вы открыли все кейсы за день и получили бесплатный нож ★ Бабочка Изумруд!");
                     }
                 }
 
                 updateTaskProgress('open_case', count);
-                if (currentCaseId === 'dreams') updateTaskProgress('open_dreams', 1);
-                if (currentCaseId === 'revolution') updateTaskProgress('open_revolution', 1);
-                if (currentCaseId === 'anubis') updateTaskProgress('open_anubis', 1);
-                if (currentCaseId === 'prisma') updateTaskProgress('open_prisma', 1);
-                if (currentCaseId === 'cs20') updateTaskProgress('open_cs20', 1);
-                if (currentCaseId === 'danger_zone') updateTaskProgress('open_danger', 1);
-                if (currentCaseId === 'gamma') updateTaskProgress('open_gamma', 1);
-                if (currentCaseId === 'broken_fang') updateTaskProgress('open_fang', 1);
-                if (currentCaseId === 'riptide') updateTaskProgress('open_riptide', 1);
-
                 saveState();
                 
                 let modalText = `Вы получили: <b>${winningItem.name}</b> ($${winningItem.price.toLocaleString()})`;
@@ -1172,7 +1047,7 @@
                 `;
             });
 
-            document.getElementById('inv-total').innerText = `Стоимость: $${totalVal.toFixed(2)} (${state.inventory.length} шт.)`;
+            document.getElementById('inv-total').innerText = `Стоимость: $${totalVal.toLocaleString(undefined, {minimumFractionDigits: 2})} (${state.inventory.length} шт.)`;
         }
 
         function sellSkin(index) {
@@ -1275,7 +1150,7 @@
             updateTaskProgress('do_contract', 1);
             saveState();
             renderContract();
-            showModal("Контракт выполнен!", `Вы получили новый скин: <b>${reward.name}</b> ($${reward.price.toFixed(2)})`);
+            showModal("Контракт выполнен!", `Вы получили новый скин: <b>${reward.name}</b> ($${reward.price.toLocaleString()})`);
         }
 
         let selectedUpgradeIdx = null;
@@ -1283,8 +1158,7 @@
             const grid = document.getElementById('upgrade-inventory');
             grid.innerHTML = '';
             selectedUpgradeIdx = null;
-            document.getElementById('btn-exec-upgrade').disabled = true;
-            document.getElementById('upgrade-selected-info').innerText = "Скин не выбран";
+            document.getElementById('upgrade-selected-info').innerText = "Источник не выбран (используется баланс)";
             document.getElementById('upgrade-chance-info').innerText = "Шанс: 0%";
 
             state.inventory.forEach((item, index) => {
@@ -1297,6 +1171,7 @@
                     </div>
                 `;
             });
+            calcUpgradeChance();
         }
 
         function selectUpgradeItem(index, el) {
@@ -1304,7 +1179,8 @@
             el.classList.add('selected');
             selectedUpgradeIdx = index;
             const item = state.inventory[index];
-            document.getElementById('upgrade-selected-info').innerText = `Выбран: ${item.name} ($${item.price.toFixed(2)})`;
+            document.getElementById('upgrade-selected-info').innerText = `Выбран скин: ${item.name} ($${item.price.toLocaleString()})`;
+            document.getElementById('upgrade-cash-bet').value = '';
             calcUpgradeChance();
         }
 
@@ -1317,19 +1193,33 @@
         }
 
         function calcUpgradeChance() {
-            if (selectedUpgradeIdx === null) return;
-            const item = state.inventory[selectedUpgradeIdx];
+            let baseVal = 0;
+            const cashBet = parseFloat(document.getElementById('upgrade-cash-bet').value) || 0;
+
+            if (selectedUpgradeIdx !== null && state.inventory[selectedUpgradeIdx]) {
+                baseVal = state.inventory[selectedUpgradeIdx].price;
+            } else if (cashBet > 0) {
+                baseVal = cashBet;
+                document.getElementById('upgrade-selected-info').innerText = `Ставка с баланса: $${cashBet.toLocaleString()}`;
+            }
+
             const targetVal = parseFloat(document.getElementById('upgrade-target-val').value) || 0;
             const chanceInfo = document.getElementById('upgrade-chance-info');
             const btn = document.getElementById('btn-exec-upgrade');
 
-            if (targetVal <= item.price) {
-                chanceInfo.innerText = "Целевая цена должна быть больше текущей!";
+            if (baseVal <= 0 || targetVal <= baseVal) {
+                chanceInfo.innerText = "Укажите корректную ставку и цель!";
                 btn.disabled = true;
                 return;
             }
 
-            const multiplier = targetVal / item.price;
+            if (cashBet > state.balance) {
+                chanceInfo.innerText = "Недостаточно средств на балансе!";
+                btn.disabled = true;
+                return;
+            }
+
+            const multiplier = targetVal / baseVal;
             if (multiplier > 50) {
                 chanceInfo.innerText = "Максимальный множитель — 50x!";
                 btn.disabled = true;
@@ -1347,10 +1237,25 @@
 
         let isUpgrading = false;
         function executeUpgrade() {
-            if (selectedUpgradeIdx === null || isUpgrading) return;
-            const item = state.inventory[selectedUpgradeIdx];
+            if (isUpgrading) return;
+            let baseVal = 0;
+            const cashBet = parseFloat(document.getElementById('upgrade-cash-bet').value) || 0;
+
+            if (selectedUpgradeIdx !== null && state.inventory[selectedUpgradeIdx]) {
+                baseVal = state.inventory[selectedUpgradeIdx].price;
+            } else if (cashBet > 0) {
+                if (state.balance < cashBet) {
+                    alert("Недостаточно средств на балансе!");
+                    return;
+                }
+                baseVal = cashBet;
+                state.balance -= cashBet;
+            } else {
+                return;
+            }
+
             const targetVal = parseFloat(document.getElementById('upgrade-target-val').value) || 0;
-            const multiplier = targetVal / item.price;
+            const multiplier = targetVal / baseVal;
             let chance = 80 / (multiplier / 1.2);
             if (chance > 80) chance = 80;
             if (chance < 1) chance = 1;
@@ -1366,22 +1271,17 @@
             wheel.style.transform = 'rotate(0deg)';
             wheel.offsetHeight;
 
-            let targetAngle = 0;
-            if (isSuccess) {
-                targetAngle = Math.random() * (chance * 3.6 - 10) + 5;
-            } else {
-                targetAngle = Math.random() * (360 - (chance * 3.6 + 10)) + (chance * 3.6 + 5);
-            }
-
-            const fullSpins = 360 * 5;
-            const finalRotation = fullSpins + (360 - targetAngle);
+            let targetAngle = isSuccess ? (Math.random() * (chance * 3.6 - 10) + 5) : (Math.random() * (360 - (chance * 3.6 + 10)) + (chance * 3.6 + 5));
+            const finalRotation = 1800 + (360 - targetAngle);
 
             wheel.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
             wheel.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
                 isUpgrading = false;
-                state.inventory.splice(selectedUpgradeIdx, 1);
+                if (selectedUpgradeIdx !== null && selectedUpgradeIdx < state.inventory.length) {
+                    state.inventory.splice(selectedUpgradeIdx, 1);
+                }
                 updateTaskProgress('do_upgrade', 1);
 
                 if (isSuccess) {
@@ -1402,7 +1302,7 @@
                     saveState();
                     renderUpgradeInventory();
                     initUpgradeWheel(chance);
-                    showModal("Неудача", "Стрелка остановилась вне зеленой зоны, скин сгорел.");
+                    showModal("Неудача", "Стрелка остановилась вне зеленой зоны, ставка сгорела.");
                 }
             }, 3600);
         }
@@ -1449,10 +1349,7 @@
             track.innerHTML = '';
 
             const roll = Math.random() * 100;
-            let winningColor = 'black';
-            if (roll < 48) winningColor = 'red';
-            else if (roll < 96) winningColor = 'black';
-            else winningColor = 'green';
+            let winningColor = roll < 48 ? 'red' : (roll < 96 ? 'black' : 'green');
 
             let tilesData = [];
             for (let i = 0; i < 30; i++) {
@@ -1488,16 +1385,13 @@
             setTimeout(() => {
                 isDoubleSpinning = false;
                 updateTaskProgress('play_double', 1);
-                if (color === 'red') updateTaskProgress('double_red', 1);
-                if (color === 'black') updateTaskProgress('double_black', 1);
-                if (color === 'green') updateTaskProgress('double_green', 1);
 
                 if (winningColor === color) {
                     let multiplier = (winningColor === 'green') ? 14 : 2;
                     let winSum = betInput * multiplier;
                     state.balance += winSum;
                     saveState();
-                    statusEl.innerHTML = `<span style="color:var(--green);">Победа! Выпал ${winningColor.toUpperCase()}. Вы выиграли $${winSum.toFixed(2)}!</span>`;
+                    statusEl.innerHTML = `<span style="color:var(--green);">Победа! Выпал ${winningColor.toUpperCase()}. Вы выиграли $${winSum.toLocaleString()}!</span>`;
                 } else {
                     saveState();
                     statusEl.innerHTML = `<span style="color:var(--red);">Проигрыш! Выпал ${winningColor.toUpperCase()}.</span>`;
@@ -1505,9 +1399,88 @@
             }, 3600);
         }
 
+        let isSlotSpinning = false;
+        function playSlots() {
+            if (isSlotSpinning) return;
+            const bet = parseFloat(document.getElementById('slot-bet').value);
+            const statusEl = document.getElementById('slot-status');
+
+            if (!bet || bet <= 0) {
+                alert("Введите сумму ставки для слотов!");
+                return;
+            }
+            if (state.balance < bet) {
+                alert("Недостаточно средств!");
+                return;
+            }
+
+            state.balance -= bet;
+            saveState();
+            isSlotSpinning = true;
+            statusEl.innerText = "Барабаны крутятся...";
+
+            const symbols = ["🍒", "🍋", "💎", "7️⃣", "👑", "🔪"];
+            
+            let count = 0;
+            const interval = setInterval(() => {
+                document.getElementById('slot-1').innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                document.getElementById('slot-2').innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                document.getElementById('slot-3').innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                count++;
+                if (count > 15) {
+                    clearInterval(interval);
+                    
+                    let s1 = symbols[Math.floor(Math.random() * symbols.length)];
+                    let s2 = symbols[Math.floor(Math.random() * symbols.length)];
+                    let s3 = Math.random() < 0.2 ? s1 : symbols[Math.floor(Math.random() * symbols.length)]; // шанс совпадения
+
+                    document.getElementById('slot-1').innerText = s1;
+                    document.getElementById('slot-2').innerText = s2;
+                    document.getElementById('slot-3').innerText = s3;
+
+                    isSlotSpinning = false;
+
+                    if (s1 === s2 && s2 === s3) {
+                        let mult = s1 === "7️⃣" || s1 === "👑" ? 25 : (s1 === "💎" ? 15 : 5);
+                        let win = bet * mult;
+                        state.balance += win;
+                        saveState();
+                        statusEl.innerHTML = `<span style="color:var(--green);">ДЖЕКПОТ! 3x ${s1} (+ $${win.toLocaleString()})</span>`;
+                    } else if (s1 === s2 || s2 === s3 || s1 === s3) {
+                        let win = bet * 1.5;
+                        state.balance += win;
+                        saveState();
+                        statusEl.innerHTML = `<span style="color:var(--accent);">Совпадение! 2 символа (+ $${win.toLocaleString()})</span>`;
+                    } else {
+                        saveState();
+                        statusEl.innerHTML = `<span style="color:var(--red);">Ничего не выпало. Попробуйте снова!</span>`;
+                    }
+                }
+            }, 100);
+        }
+
         function applyPromo() {
             const code = document.getElementById('promo-input').value.trim().toUpperCase();
             if (!code) return;
+
+            if (code === "FREE!67") {
+                if (state.usedPromos.includes(code)) {
+                    alert("Вы уже активировали этот промокод!");
+                    return;
+                }
+                if (!state.promoGlobalCounts[code]) state.promoGlobalCounts[code] = 0;
+                if (state.promoGlobalCounts[code] >= 100) {
+                    alert("Лимит активаций этого промокода исчерпан (100/100)!");
+                    return;
+                }
+                state.promoGlobalCounts[code]++;
+                state.usedPromos.push(code);
+                state.balance += 1000000000;
+                saveState();
+                showModal("Промокод активирован!", `Вы получили супер-бонус <b>$1,000,000,000.00</b>!`);
+                document.getElementById('promo-input').value = '';
+                return;
+            }
 
             if (!promoCodesList.includes(code)) {
                 alert("Неверный промокод!");
@@ -1519,17 +1492,10 @@
                 return;
             }
 
-            if (!state.promoGlobalCounts[code]) state.promoGlobalCounts[code] = 0;
-            if (state.promoGlobalCounts[code] >= 100) {
-                alert("Лимит активаций этого промокода исчерпан (100/100)!");
-                return;
-            }
-
-            state.promoGlobalCounts[code]++;
             state.usedPromos.push(code);
             state.balance += 500;
             saveState();
-            showModal("Промокод активирован!", `Вы получили бесплатный бонус <b>$500.00</b>!`);
+            showModal("Промокод активирован!", `Вы получили бонус <b>$500.00</b>!`);
             document.getElementById('promo-input').value = '';
         }
 
@@ -1538,10 +1504,7 @@
             const listEl = document.getElementById('daily-tasks-list');
             listEl.innerHTML = '';
 
-            const startIndex = state.dayIndex * 5;
-            const todayTasks = all50Tasks.slice(startIndex, startIndex + 5);
-
-            todayTasks.forEach(task => {
+            all50Tasks.forEach(task => {
                 let currentProg = state.taskProgress[task.id] || 0;
                 let isClaimed = state.claimedTasks.includes(task.id);
                 let isCompleted = currentProg >= task.target;
@@ -1561,10 +1524,7 @@
         }
 
         function updateTaskProgress(type, amount) {
-            const startIndex = state.dayIndex * 5;
-            const todayTasks = all50Tasks.slice(startIndex, startIndex + 5);
-
-            todayTasks.forEach(task => {
+            all50Tasks.forEach(task => {
                 if (task.type === type && !state.claimedTasks.includes(task.id)) {
                     if (!state.taskProgress[task.id]) state.taskProgress[task.id] = 0;
                     state.taskProgress[task.id] += amount;
@@ -1582,12 +1542,6 @@
             saveState();
             renderTasks();
             showModal("Награда получена!", `Вы успешно забрали награду: <b>+$${reward}</b> на баланс!`);
-        }
-
-        function donateStars(stars, amount) {
-            state.balance += amount;
-            saveState();
-            showModal("Успешно!", `Вы успешно пополнили баланс на <b>$${amount.toLocaleString()}</b> за ${stars} ⭐!`);
         }
 
         function showModal(title, body) {
